@@ -87,10 +87,11 @@
     <div class="glass rounded-xl shadow-custom p-6 mb-6">
         <h2 class="text-2xl font-bold text-gray-800 mb-6">Add New Product</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-            <input type="text" id="prodName" placeholder="Product Name" class="px-4 py-2 border border-gray-300 rounded-lg">
-            <input type="number" id="prodBuyPrice" placeholder="Buy Price" class="px-4 py-2 border border-gray-300 rounded-lg">
-            <input type="number" id="prodSellPrice" placeholder="Sell Price" class="px-4 py-2 border border-gray-300 rounded-lg">
-            <input type="number" id="prodStock" placeholder="Initial Stock" class="px-4 py-2 border border-gray-300 rounded-lg">
+            <input type="text" id="prodName" placeholder="Product Name" autocomplete="off" class="px-4 py-2 border border-gray-300 rounded-lg">
+            <input type="number" id="prodBuyPrice" placeholder="Buy Price" autocomplete="off" class="px-4 py-2 border border-gray-300 rounded-lg">
+            <input type="number" id="prodSellPrice" placeholder="Sell Price" autocomplete="off" class="px-4 py-2 border border-gray-300 rounded-lg">
+            <input type="number" id="prodStock" placeholder="Initial Stock" autocomplete="off" class="px-4 py-2 border border-gray-300 rounded-lg">
+            
             <button onclick="addProduct()" class="bg-gradient-to-r from-green-500 to-emerald-500 text-white py-2 rounded-lg font-semibold hover:from-green-600 hover:to-emerald-600 transition">Add Product</button>
         </div>
     </div>
@@ -118,23 +119,28 @@
 <div id="distributionTab" class="container mx-auto px-4 pb-8 tab-content hidden">
     <div class="glass rounded-xl shadow-custom p-6 mb-6">
         <h2 class="text-2xl font-bold text-gray-800 mb-6">Distribute to Shops</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div class="relative">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+            <div class="relative lg:col-span-2">
                 <select id="distProduct" class="hidden">
                     <option value="">Select Product</option>
                 </select>
                 
                 <input type="text" id="distProductSearch" placeholder="Select or Search Product..." 
                        class="w-full px-4 py-2 border border-gray-300 rounded-lg cursor-pointer"
+                       autocomplete="off"
                        onfocus="showDropdown('dist')" onblur="hideDropdown('dist', event)"
                        onkeyup="filterProducts('dist')">
 
                 <div id="distProductDropdown" class="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto hidden">
                     </div>
             </div>
-            <input type="text" id="distShop" placeholder="Shop Name" class="px-4 py-2 border border-gray-300 rounded-lg">
-            <input type="number" id="distQty" placeholder="Quantity" class="px-4 py-2 border border-gray-300 rounded-lg">
-            <button onclick="addDistribution()" class="bg-gradient-to-r from-blue-500 to-indigo-500 text-white py-2 rounded-lg font-semibold hover:from-blue-600 hover:to-indigo-600 transition">Distribute</button>
+            <input type="text" id="distShop" placeholder="Shop Name" autocomplete="off" class="px-4 py-2 border border-gray-300 rounded-lg">
+            
+            <input type="number" id="distQty" placeholder="Sold Qty" autocomplete="off" class="px-4 py-2 border border-gray-300 rounded-lg">
+            
+            <input type="number" id="distFreeQty" placeholder="Free Qty" autocomplete="off" class="px-4 py-2 border border-gray-300 rounded-lg bg-yellow-50">
+
+            <button onclick="addDistribution()" class="bg-gradient-to-r from-blue-500 to-indigo-500 text-white py-2 rounded-lg font-semibold hover:from-blue-600 hover:to-indigo-600 transition lg:col-span-5 md:col-span-2">Distribute Items</button>
         </div>
     </div>
 
@@ -147,7 +153,8 @@
                         <th class="px-4 py-3 text-left rounded-tl-lg">Date</th>
                         <th class="px-4 py-3 text-left">Product</th>
                         <th class="px-4 py-3 text-left">Shop</th>
-                        <th class="px-4 py-3 text-right">Quantity</th>
+                        <th class="px-4 py-3 text-right">Sold Qty</th>
+                        <th class="px-4 py-3 text-right bg-yellow-500 bg-opacity-20">Free Qty</th>
                         <th class="px-4 py-3 text-right rounded-tr-lg">Value (Income)</th>
                     </tr>
                 </thead>
@@ -168,13 +175,14 @@
                 
                 <input type="text" id="restockProductSearch" placeholder="Select or Search Product..." 
                        class="w-full px-4 py-2 border border-gray-300 rounded-lg cursor-pointer"
+                       autocomplete="off"
                        onfocus="showDropdown('restock')" onblur="hideDropdown('restock', event)"
                        onkeyup="filterProducts('restock')">
 
                 <div id="restockProductDropdown" class="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto hidden">
                     </div>
             </div>
-            <input type="number" id="restockQty" placeholder="Quantity" class="px-4 py-2 border border-gray-300 rounded-lg">
+            <input type="number" id="restockQty" placeholder="Quantity" autocomplete="off" class="px-4 py-2 border border-gray-300 rounded-lg">
             <button onclick="addRestock()" class="bg-gradient-to-r from-purple-500 to-pink-500 text-white py-2 rounded-lg font-semibold hover:from-purple-600 hover:to-pink-600 transition">Restock</button>
         </div>
     </div>
@@ -389,8 +397,6 @@
 
     // --- Core Functions adapted for Firebase ---
     
-    // The old login() function is replaced by the pressKey() function above
-    
     function logout() {
         // Hides system and shows PIN login screen
         document.getElementById('mainSystem').classList.add('hidden');
@@ -450,40 +456,47 @@
     function addDistribution() {
         const prodId = parseInt(document.getElementById('distProduct').value);
         const shop = document.getElementById('distShop').value.trim();
-        const qty = parseFloat(document.getElementById('distQty').value) || 0;
+        
+        // Sold Qty and Free Qty
+        const soldQty = parseFloat(document.getElementById('distQty').value) || 0;
+        const freeQty = parseFloat(document.getElementById('distFreeQty').value) || 0;
+        
+        const totalQtyToRemove = soldQty + freeQty;
 
-        if (!prodId || !shop || qty <= 0) {
-            alert('Please fill in all distribution details!');
+        if (!prodId || !shop || totalQtyToRemove <= 0) {
+            alert('Please fill in shop name and at least one quantity (Sold or Free)!');
             return;
         }
 
         const product = products.find(p => p.id === prodId);
         if (!product) return;
 
-        if (product.stock < qty) {
-            alert('Insufficient Stock!');
+        if (product.stock < totalQtyToRemove) {
+            alert(`Insufficient Stock! You only have ${product.stock} items.`);
             return;
         }
 
-        // 1. Stock අඩු කිරීම
-        const updatedProduct = {...product, stock: product.stock - qty};
+        // 1. Stock අඩු කිරීම (Sold + Free)
+        const updatedProduct = {...product, stock: product.stock - totalQtyToRemove};
         writeData(`products/${product.id}`, updatedProduct);
 
-        // 2. Distribution වාර්තාව එකතු කිරීම
+        // 2. Distribution වාර්තාව එකතු කිරීම (Income calculated ONLY on Sold Qty)
         const newDistribution = {
             id: Date.now(),
             date: new Date().toISOString(),
             productName: product.name,
             shop,
-            qty,
-            value: product.sellPrice * qty
+            qty: soldQty,
+            freeQty: freeQty,
+            value: product.sellPrice * soldQty 
         };
         writeData(`distributions/${newDistribution.id}`, newDistribution);
 
-
+        // Clear Inputs
         document.getElementById('distProduct').value = '';
         document.getElementById('distShop').value = '';
         document.getElementById('distQty').value = '';
+        document.getElementById('distFreeQty').value = '';
         document.getElementById('distProductSearch').value = '';
     }
 
@@ -626,6 +639,7 @@
                 <td class="px-4 py-3 text-gray-900">${d.productName}</td>
                 <td class="px-4 py-3 text-gray-900">${d.shop}</td>
                 <td class="px-4 py-3 text-right font-semibold text-gray-900">${d.qty.toFixed(2)}</td>
+                <td class="px-4 py-3 text-right font-semibold text-yellow-600 bg-yellow-50">${(d.freeQty || 0).toFixed(2)}</td>
                 <td class="px-4 py-3 text-right font-semibold text-green-600">Rs. ${d.value.toFixed(2)}</td>
             </tr>
         `).join('');
@@ -741,13 +755,17 @@
                      <div class="overflow-x-auto"><table class="w-full min-w-[500px] border-collapse">
                      <thead class="bg-green-100"><tr class="text-left text-sm text-green-800">
                         <th class="px-4 py-2 border-b">Time</th><th class="px-4 py-2 border-b">Product</th>
-                        <th class="px-4 py-2 border-b">Shop</th><th class="px-4 py-2 border-b text-right">Qty</th>
+                        <th class="px-4 py-2 border-b">Shop</th>
+                        <th class="px-4 py-2 border-b text-right">Sold Qty</th>
+                        <th class="px-4 py-2 border-b text-right">Free Qty</th>
                         <th class="px-4 py-2 border-b text-right">Income</th></tr></thead>
                      <tbody>`;
             dailyDist.sort((a, b) => new Date(b.date) - new Date(a.date)).forEach(d => {
                 const time = new Date(d.date).toLocaleTimeString('en-US', {hour: '2-digit', minute: '2-digit'});
                 html += `<tr><td class="px-4 py-2 text-sm">${time}</td><td class="px-4 py-2 text-sm">${d.productName}</td>
-                         <td class="px-4 py-2 text-sm">${d.shop}</td><td class="px-4 py-2 text-sm text-right">${d.qty.toFixed(2)}</td>
+                         <td class="px-4 py-2 text-sm">${d.shop}</td>
+                         <td class="px-4 py-2 text-sm text-right">${d.qty.toFixed(2)}</td>
+                         <td class="px-4 py-2 text-sm text-right text-yellow-600">${(d.freeQty || 0).toFixed(2)}</td>
                          <td class="px-4 py-2 text-sm text-right text-green-600">Rs. ${d.value.toFixed(2)}</td></tr>`;
             });
             html += `</tbody></table></div>`;
@@ -847,12 +865,13 @@
         doc.text('2. Distribution (Sales) Details', 20, y);
         y += 5;
 
-        const distHeaders = ["Date", "Product", "Shop", "Qty", "Sale Value"];
+        const distHeaders = ["Date", "Product", "Shop", "Sold Qty", "Free Qty", "Sale Value"];
         const distData = filteredDist.map(d => [
             new Date(d.date).toLocaleDateString('en-US'),
             d.productName,
             d.shop,
             d.qty.toFixed(2),
+            (d.freeQty || 0).toFixed(2),
             `Rs. ${d.value.toFixed(2)}`
         ]);
 
@@ -864,7 +883,8 @@
             headStyles: { fillColor: [75, 175, 80] },
             columnStyles: {
                 3: { halign: 'right' },
-                4: { halign: 'right' }
+                4: { halign: 'right' },
+                5: { halign: 'right' }
             }
         });
         y = doc.autoTable.previous.finalY + 15;
