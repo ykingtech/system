@@ -14,17 +14,20 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
         
+        /* Glass Effect */
         .glass { 
             background: #ffffff; 
             border: 1px solid #e5e7eb; 
         }
         
+        /* Shadows */
         .shadow-custom { box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         
         input:focus, select:focus, textarea:focus { outline: none; ring: 2px; ring-color: #3b82f6; }
         .fade-in { animation: fadeIn 0.3s ease-in; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
+        /* PIN Login Styles */
         .key:hover { background: #2563eb; color: white; }
     </style>
 </head>
@@ -91,28 +94,32 @@
 
 <div id="productsTab" class="container mx-auto px-4 pb-8 tab-content">
     <div class="glass rounded-xl shadow-custom p-6 mb-6">
-        <h2 class="text-2xl font-bold text-gray-800 mb-6" id="addProductTitle">Add New Product</h2>
+        <h2 class="text-2xl font-bold text-gray-800 mb-6" id="productFormTitle">Add New Product</h2>
+        
         <input type="hidden" id="editingProductId">
         
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
             <input type="text" id="prodName" placeholder="Product Name" autocomplete="off" class="px-4 py-2 border border-gray-300 rounded-lg">
+            
             <input type="number" id="prodBuyPrice" placeholder="Buy Price (Optional)" autocomplete="off" class="px-4 py-2 border border-gray-300 rounded-lg">
             <input type="number" id="prodSellPrice" placeholder="Sell Price (Optional)" autocomplete="off" class="px-4 py-2 border border-gray-300 rounded-lg">
+            
             <input type="number" id="prodStock" placeholder="Initial Stock" autocomplete="off" class="px-4 py-2 border border-gray-300 rounded-lg">
             
             <button id="saveProductBtn" onclick="saveProduct()" class="bg-gradient-to-r from-green-500 to-emerald-500 text-white py-2 rounded-lg font-semibold hover:from-green-600 hover:to-emerald-600 transition">Add Product</button>
-            <button id="cancelEditBtn" onclick="cancelEdit()" class="bg-gray-400 text-white py-2 rounded-lg font-semibold hover:bg-gray-500 transition hidden">Cancel</button>
+            <button id="cancelEditBtn" onclick="cancelEdit()" class="hidden bg-gray-500 text-white py-2 rounded-lg font-semibold hover:bg-gray-600 transition">Cancel</button>
         </div>
     </div>
 
     <div class="glass rounded-xl shadow-custom p-6">
         <div class="flex justify-between items-center mb-6">
             <h2 class="text-2xl font-bold text-gray-800">Product List</h2>
+            
             <input type="text" id="productListSearch" placeholder="Search Products..." 
                    class="px-4 py-2 border border-gray-300 rounded-lg w-64"
                    onkeyup="updateProductsTable()">
         </div>
-        
+
         <div class="overflow-x-auto">
             <table class="w-full">
                 <thead class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
@@ -136,18 +143,31 @@
         <h2 class="text-2xl font-bold text-gray-800 mb-6">Distribute to Shops</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
             <div class="relative lg:col-span-2">
-                <select id="distProduct" class="hidden"><option value="">Select Product</option></select>
-                <input type="text" id="distProductSearch" placeholder="Select or Search Product..." class="w-full px-4 py-2 border border-gray-300 rounded-lg cursor-pointer" autocomplete="off" onfocus="showDropdown('dist')" onblur="hideDropdown('dist', event)" onkeyup="filterProducts('dist')">
-                <div id="distProductDropdown" class="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto hidden"></div>
+                <select id="distProduct" class="hidden">
+                    <option value="">Select Product</option>
+                </select>
+                
+                <input type="text" id="distProductSearch" placeholder="Select or Search Product..." 
+                       class="w-full px-4 py-2 border border-gray-300 rounded-lg cursor-pointer"
+                       autocomplete="off"
+                       onfocus="showDropdown('dist')" onblur="hideDropdown('dist', event)"
+                       onkeyup="filterProducts('dist')">
+
+                <div id="distProductDropdown" class="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto hidden">
+                    </div>
             </div>
             <input type="text" id="distShop" placeholder="Shop Name" autocomplete="off" class="px-4 py-2 border border-gray-300 rounded-lg">
+            
             <input type="number" id="distQty" placeholder="Sold Qty" autocomplete="off" class="px-4 py-2 border border-gray-300 rounded-lg">
+            
             <input type="number" id="distFreeQty" placeholder="Free Qty" autocomplete="off" class="px-4 py-2 border border-gray-300 rounded-lg bg-yellow-50">
+
             <button onclick="addDistribution()" class="bg-gradient-to-r from-blue-500 to-indigo-500 text-white py-2 rounded-lg font-semibold hover:from-blue-600 hover:to-indigo-600 transition lg:col-span-5 md:col-span-2">Distribute Items</button>
         </div>
     </div>
+
     <div class="glass rounded-xl shadow-custom p-6">
-        <h2 class="text-2xl font-bold text-gray-800 mb-6">Distribution History</h2>
+        <h2 class="text-2xl font-bold text-gray-800 mb-6">Distribution History (Last 200)</h2>
         <div class="overflow-x-auto">
             <table class="w-full">
                 <thead class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
@@ -171,16 +191,26 @@
         <h2 class="text-2xl font-bold text-gray-800 mb-6">Restock Inventory</h2>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div class="relative">
-                <select id="restockProduct" class="hidden"><option value="">Select Product</option></select>
-                <input type="text" id="restockProductSearch" placeholder="Select or Search Product..." class="w-full px-4 py-2 border border-gray-300 rounded-lg cursor-pointer" autocomplete="off" onfocus="showDropdown('restock')" onblur="hideDropdown('restock', event)" onkeyup="filterProducts('restock')">
-                <div id="restockProductDropdown" class="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto hidden"></div>
+                <select id="restockProduct" class="hidden">
+                    <option value="">Select Product</option>
+                </select>
+                
+                <input type="text" id="restockProductSearch" placeholder="Select or Search Product..." 
+                       class="w-full px-4 py-2 border border-gray-300 rounded-lg cursor-pointer"
+                       autocomplete="off"
+                       onfocus="showDropdown('restock')" onblur="hideDropdown('restock', event)"
+                       onkeyup="filterProducts('restock')">
+
+                <div id="restockProductDropdown" class="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto hidden">
+                    </div>
             </div>
             <input type="number" id="restockQty" placeholder="Quantity" autocomplete="off" class="px-4 py-2 border border-gray-300 rounded-lg">
             <button onclick="addRestock()" class="bg-gradient-to-r from-purple-500 to-pink-500 text-white py-2 rounded-lg font-semibold hover:from-purple-600 hover:to-pink-600 transition">Restock</button>
         </div>
     </div>
+
     <div class="glass rounded-xl shadow-custom p-6">
-        <h2 class="text-2xl font-bold text-gray-800 mb-6">Restock History</h2>
+        <h2 class="text-2xl font-bold text-gray-800 mb-6">Restock History (Last 200)</h2>
         <div class="overflow-x-auto">
             <table class="w-full">
                 <thead class="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
@@ -201,23 +231,45 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
         <div class="glass rounded-xl shadow-custom p-6 bg-gradient-to-br from-green-500 to-emerald-500">
             <div class="flex items-center justify-between">
-                <div><p class="text-white text-sm font-medium mb-1">Total Income</p><p class="text-white text-3xl font-bold" id="totalIncome">Rs. 0.00</p></div>
-                <div class="bg-white bg-opacity-20 p-3 rounded-lg"><svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>
+                <div>
+                    <p class="text-white text-sm font-medium mb-1">Recent Income (Last 200)</p>
+                    <p class="text-white text-3xl font-bold" id="totalIncome">Rs. 0.00</p>
+                </div>
+                <div class="bg-white bg-opacity-20 p-3 rounded-lg">
+                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
             </div>
         </div>
         <div class="glass rounded-xl shadow-custom p-6 bg-gradient-to-br from-red-500 to-pink-500">
             <div class="flex items-center justify-between">
-                <div><p class="text-white text-sm font-medium mb-1">Total Expenses</p><p class="text-white text-3xl font-bold" id="totalExpenses">Rs. 0.00</p></div>
-                <div class="bg-white bg-opacity-20 p-3 rounded-lg"><svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg></div>
+                <div>
+                    <p class="text-white text-sm font-medium mb-1">Recent Expenses (Last 200)</p>
+                    <p class="text-white text-3xl font-bold" id="totalExpenses">Rs. 0.00</p>
+                </div>
+                <div class="bg-white bg-opacity-20 p-3 rounded-lg">
+                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                    </svg>
+                </div>
             </div>
         </div>
         <div class="glass rounded-xl shadow-custom p-6 bg-gradient-to-br from-blue-500 to-indigo-500">
             <div class="flex items-center justify-between">
-                <div><p class="text-white text-sm font-medium mb-1">Stock Value (Cost)</p><p class="text-white text-3xl font-bold" id="stockValue">Rs. 0.00</p></div>
-                <div class="bg-white bg-opacity-20 p-3 rounded-lg"><svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg></div>
+                <div>
+                    <p class="text-white text-sm font-medium mb-1">Stock Value (Cost)</p>
+                    <p class="text-white text-3xl font-bold" id="stockValue">Rs. 0.00</p>
+                </div>
+                <div class="bg-white bg-opacity-20 p-3 rounded-lg">
+                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                    </svg>
+                </div>
             </div>
         </div>
     </div>
+
     <div class="glass rounded-xl shadow-custom p-6">
         <h2 class="text-2xl font-bold text-gray-800 mb-6">Stock Value by Product</h2>
         <div class="overflow-x-auto">
@@ -245,6 +297,7 @@
             <button onclick="generateReport()" class="bg-gradient-to-r from-indigo-500 to-purple-500 text-white py-2 rounded-lg font-semibold hover:from-indigo-600 hover:to-purple-600 transition">Download PDF Report</button>
         </div>
     </div>
+
     <div class="glass rounded-xl shadow-custom p-6">
         <h2 class="text-2xl font-bold text-gray-800 mb-6">Daily History Viewer</h2>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
@@ -259,7 +312,7 @@
 
 </div> <script>
     /* ================= PIN LOGIN LOGIC ================= */
-    let pin = "1234"; 
+    let pin = "1234"; // Set your default PIN here
     let inputPin = "";
 
     function updateDots() {
@@ -278,14 +331,21 @@
         if (inputPin.length === 4) {
             if (inputPin === pin) {
                 document.getElementById("errorMsg").classList.add("hidden");
+                // Successful Login: Load System and Firebase
                 document.getElementById("loginScreen").classList.add("hidden");
                 document.getElementById("mainSystem").classList.remove("hidden");
+                
+                // *** FIREBASE INITIALIZATION ON SUCCESSFUL LOGIN ***
                 initializeDatabaseListeners();
                 showTab('products');
+                
             } else {
+                // Incorrect PIN
                 document.getElementById("errorMsg").classList.remove("hidden");
                 inputPin = "";
+                // Flash dots red for error
                 for (let i = 1; i <= 4; i++) document.getElementById("dot" + i).classList.add("bg-red-500");
+                
                 setTimeout(() => {
                     document.getElementById("errorMsg").classList.add("hidden");
                     for (let i = 1; i <= 4; i++) document.getElementById("dot" + i).classList.remove("bg-red-500");
@@ -301,8 +361,9 @@
         updateDots();
     }
     
-    /* ================= FIREBASE & APP LOGIC ================= */
+    /* ================= ORIGINAL FULL JAVASCRIPT (WITH FIREBASE) ================= */
 
+    // Firebase Functions (Compat libraries used for simple setup)
     const firebaseApp = firebase.initializeApp({
         apiKey: "AIzaSyB_O5J7N3OocENr-De87sXAf5-ofpFtBLs",
         authDomain: "pos-app-37e46.firebaseapp.com",
@@ -314,11 +375,15 @@
         measurementId: "G-QQMSQV4ESB"
     });
 
+    // Initialize Realtime Database
     const database = firebaseApp.database();
+    
     let products = [];
     let distributions = [];
     let restocks = [];
     let currentTab = 'products';
+
+    // --- Firebase Data Handling ---
 
     function writeData(path, data) {
         database.ref(path).set(data)
@@ -327,28 +392,39 @@
     }
 
     function initializeDatabaseListeners() {
+        // Products load fully (needed for stock check)
         database.ref('products').on('value', (snapshot) => {
             const data = snapshot.val();
             products = data ? Object.values(data) : [];
+            console.log("Products loaded from Firebase.");
             updateUI();
         });
-        database.ref('distributions').on('value', (snapshot) => {
+
+        // FIXED: Load only last 200 distributions to prevent freezing
+        database.ref('distributions').limitToLast(200).on('value', (snapshot) => {
             const data = snapshot.val();
             distributions = data ? Object.values(data).sort((a, b) => new Date(a.date) - new Date(b.date)) : [];
+            console.log("Distributions loaded (Limited to last 200).");
             if (currentTab === 'distribution') updateUI();
         });
-        database.ref('restocks').on('value', (snapshot) => {
+
+        // FIXED: Load only last 200 restocks to prevent freezing
+        database.ref('restocks').limitToLast(200).on('value', (snapshot) => {
             const data = snapshot.val();
             restocks = data ? Object.values(data).sort((a, b) => new Date(a.date) - new Date(b.date)) : [];
+            console.log("Restocks loaded (Limited to last 200).");
             if (currentTab === 'restock') updateUI();
         });
     }
 
+    // --- Core Functions adapted for Firebase ---
+    
     function logout() {
+        // Hides system and shows PIN login screen
         document.getElementById('mainSystem').classList.add('hidden');
         document.getElementById('loginScreen').classList.remove('hidden');
-        inputPin = ""; 
-        updateDots();
+        inputPin = ""; // Clear pin input
+        updateDots(); // Reset dots
     }
 
     function showTab(tabName) {
@@ -367,18 +443,18 @@
         updateUI();
     }
 
-    /* === MODIFIED: SAVE PRODUCT (ADD/UPDATE) === */
+    /* === SAVE PRODUCT (ADD OR EDIT) === */
     function saveProduct() {
         const editingId = document.getElementById('editingProductId').value;
         const name = document.getElementById('prodName').value.trim();
-        // Allow optional prices (default to 0 if empty)
+        
+        // Validation: Prices are now optional (can be 0), but Stock and Name must be valid
         const buyPrice = parseFloat(document.getElementById('prodBuyPrice').value) || 0;
         const sellPrice = parseFloat(document.getElementById('prodSellPrice').value) || 0;
         const stock = parseFloat(document.getElementById('prodStock').value) || 0;
 
-        // Validation relaxed: Prices can be 0
         if (!name || stock < 0) {
-            alert('Please enter a Product Name and valid Stock!');
+            alert('Please enter a valid Product Name and Stock!');
             return;
         }
 
@@ -391,39 +467,41 @@
         };
 
         writeData(`products/${productData.id}`, productData);
-        cancelEdit(); // Reset form
+        cancelEdit(); // Reset the form after saving
     }
 
-    /* === NEW: EDIT PRODUCT HELPER === */
+    /* === EDIT HELPER FUNCTIONS === */
     function editProduct(id) {
         const product = products.find(p => p.id === id);
         if (!product) return;
 
-        // Fill Form
+        // Populate fields
         document.getElementById('editingProductId').value = product.id;
         document.getElementById('prodName').value = product.name;
         document.getElementById('prodBuyPrice').value = product.buyPrice;
         document.getElementById('prodSellPrice').value = product.sellPrice;
         document.getElementById('prodStock').value = product.stock;
 
-        // Change UI to Edit Mode
-        document.getElementById('addProductTitle').innerText = "Edit Product";
-        document.getElementById('saveProductBtn').innerText = "Update Product";
+        // Change UI state
+        document.getElementById('productFormTitle').textContent = "Edit Product";
+        document.getElementById('saveProductBtn').textContent = "Update Product";
         document.getElementById('cancelEditBtn').classList.remove('hidden');
         
         // Scroll to top
-        document.querySelector('.tab-content').scrollIntoView({ behavior: 'smooth' });
+        document.getElementById('productsTab').scrollIntoView({behavior: 'smooth'});
     }
 
     function cancelEdit() {
+        // Clear fields
         document.getElementById('editingProductId').value = '';
         document.getElementById('prodName').value = '';
         document.getElementById('prodBuyPrice').value = '';
         document.getElementById('prodSellPrice').value = '';
         document.getElementById('prodStock').value = '';
 
-        document.getElementById('addProductTitle').innerText = "Add New Product";
-        document.getElementById('saveProductBtn').innerText = "Add Product";
+        // Reset UI state
+        document.getElementById('productFormTitle').textContent = "Add New Product";
+        document.getElementById('saveProductBtn').textContent = "Add Product";
         document.getElementById('cancelEditBtn').classList.add('hidden');
     }
 
@@ -436,23 +514,31 @@
     function addDistribution() {
         const prodId = parseInt(document.getElementById('distProduct').value);
         const shop = document.getElementById('distShop').value.trim();
+        
+        // Sold Qty and Free Qty
         const soldQty = parseFloat(document.getElementById('distQty').value) || 0;
         const freeQty = parseFloat(document.getElementById('distFreeQty').value) || 0;
+        
         const totalQtyToRemove = soldQty + freeQty;
 
         if (!prodId || !shop || totalQtyToRemove <= 0) {
-            alert('Please fill in shop name and at least one quantity!');
+            alert('Please fill in shop name and at least one quantity (Sold or Free)!');
             return;
         }
+
         const product = products.find(p => p.id === prodId);
         if (!product) return;
+
         if (product.stock < totalQtyToRemove) {
             alert(`Insufficient Stock! You only have ${product.stock} items.`);
             return;
         }
+
+        // 1. Stock අඩු කිරීම (Sold + Free)
         const updatedProduct = {...product, stock: product.stock - totalQtyToRemove};
         writeData(`products/${product.id}`, updatedProduct);
 
+        // 2. Distribution වාර්තාව එකතු කිරීම (Income calculated ONLY on Sold Qty)
         const newDistribution = {
             id: Date.now(),
             date: new Date().toISOString(),
@@ -463,6 +549,8 @@
             value: product.sellPrice * soldQty 
         };
         writeData(`distributions/${newDistribution.id}`, newDistribution);
+
+        // Clear Inputs
         document.getElementById('distProduct').value = '';
         document.getElementById('distShop').value = '';
         document.getElementById('distQty').value = '';
@@ -478,12 +566,15 @@
             alert('Please enter all restock details!');
             return;
         }
+
         const product = products.find(p => p.id === prodId);
         if (!product) return;
 
+        // 1. Stock වැඩි කිරීම
         const updatedProduct = {...product, stock: product.stock + qty};
         writeData(`products/${product.id}`, updatedProduct);
 
+        // 2. Restock වාර්තාව එකතු කිරීම
         const newRestock = {
             id: Date.now(),
             date: new Date().toISOString(),
@@ -492,10 +583,13 @@
             cost: product.buyPrice * qty
         };
         writeData(`restocks/${newRestock.id}`, newRestock);
+
         document.getElementById('restockProduct').value = '';
         document.getElementById('restockQty').value = '';
         document.getElementById('restockProductSearch').value = '';
     }
+
+    // --- Custom Dropdown Functions (Search & Highlight) ---
 
     function showDropdown(type) {
         document.getElementById(type + 'ProductDropdown').classList.remove('hidden');
@@ -527,25 +621,48 @@
     function filterProducts(type) {
         const input = document.getElementById(type + 'ProductSearch').value.toLowerCase();
         const dropdown = document.getElementById(type + 'ProductDropdown');
+        
         let htmlContent = '';
         
         products.forEach(p => {
             const name = p.name.toLowerCase();
             const index = name.indexOf(input);
+            
             if (!input || index !== -1) {
                 let highlightedName = p.name;
+                let currentStock = p.stock.toFixed(2);
+                
+                if (input && index !== -1) {
+                    const start = p.name.substring(0, index);
+                    const match = p.name.substring(index, index + input.length);
+                    const end = p.name.substring(index + input.length);
+                    highlightedName = `${start}<span class="bg-yellow-200 font-bold">${match}</span>${end}`;
+                }
+                
                 const safeName = p.name.replace(/'/g, "\\'");
+                
                 htmlContent += `
                     <div class="p-3 cursor-pointer hover:bg-blue-100 transition flex justify-between items-center" 
-                         onmousedown="selectProduct('${type}', ${p.id}, '${safeName}')" tabindex="0">
-                        <div><span class="text-gray-900">${highlightedName}</span><span class="text-gray-500 text-sm"> (Stock: ${p.stock})</span></div>
-                    </div>`;
+                         onmousedown="selectProduct('${type}', ${p.id}, '${safeName}')"
+                         tabindex="0">
+                        <div>
+                            <span class="text-gray-900">${highlightedName}</span>
+                            <span class="text-gray-500 text-sm"> (Stock: ${currentStock})</span>
+                        </div>
+                    </div>
+                `;
             }
         });
-        if (htmlContent === '') htmlContent = '<div class="p-3 text-gray-500">No results found</div>';
+
+        if (htmlContent === '') {
+            htmlContent = '<div class="p-3 text-gray-500">No results found</div>';
+        }
+        
         dropdown.innerHTML = htmlContent;
         dropdown.classList.remove('hidden');
     }
+
+    // --- UI Updates ---
 
     function updateUI() {
         updateProductsTable();
@@ -556,14 +673,14 @@
         setupDailyHistoryDate();
     }
 
-    /* === MODIFIED: PRODUCT TABLE WITH SEARCH AND EDIT === */
+    /* === PRODUCT TABLE WITH SEARCH & EDIT BTN === */
     function updateProductsTable() {
         const tbody = document.getElementById('productsTableBody');
         const searchInput = document.getElementById('productListSearch');
-        const filter = searchInput ? searchInput.value.toLowerCase() : "";
+        const filterText = searchInput ? searchInput.value.toLowerCase() : '';
 
-        // Filter products based on search input
-        const filteredProducts = products.filter(p => p.name.toLowerCase().includes(filter));
+        // Filter products based on search
+        const filteredProducts = products.filter(p => p.name.toLowerCase().includes(filterText));
 
         tbody.innerHTML = filteredProducts.map(p => `
             <tr class="hover:bg-gray-50 transition">
@@ -615,6 +732,7 @@
         document.getElementById('totalExpenses').textContent = `Rs. ${totalExpenses.toFixed(2)}`;
         document.getElementById('stockValue').textContent = `Rs. ${stockValue.toFixed(2)}`;
 
+        // Stock Value Table Update
         const tbody = document.getElementById('stockValueTableBody');
         tbody.innerHTML = products.map(p => `
             <tr class="hover:bg-gray-50 transition">
@@ -629,27 +747,54 @@
     function updateProductSelects() {
         const distSelect = document.getElementById('distProduct');
         const restockSelect = document.getElementById('restockProduct');
+        
         const options = products.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+        
         distSelect.innerHTML = '<option value="">Select Product</option>' + options;
         restockSelect.innerHTML = '<option value="">Select Product</option>' + options;
+
+        const distSearch = document.getElementById('distProductSearch');
+        const restockSearch = document.getElementById('restockProductSearch');
+        if (distSearch) distSearch.value = '';
+        if (restockSearch) restockSearch.value = '';
     }
+
+    // --- Daily History Viewer Functions ---
     
     function setupDailyHistoryDate() {
         const today = new Date().toISOString().split('T')[0];
         const dateInput = document.getElementById('dailyHistoryDate');
-        if (dateInput && !dateInput.value) dateInput.value = today;
+        if (dateInput && !dateInput.value) {
+            dateInput.value = today;
+        }
     }
 
     function viewDailyHistory() {
         const dateString = document.getElementById('dailyHistoryDate').value;
         const resultsDiv = document.getElementById('dailyHistoryResults');
         resultsDiv.innerHTML = '';
-        if (!dateString) { resultsDiv.innerHTML = '<p class="text-red-500">Please select a date!</p>'; return; }
+
+        if (!dateString) {
+            resultsDiv.innerHTML = '<p class="text-red-500">Please select a date!</p>';
+            return;
+        }
+
         const selectedDate = new Date(dateString);
-        const startOfDay = new Date(selectedDate); startOfDay.setHours(0, 0, 0, 0);
-        const endOfDay = new Date(selectedDate); endOfDay.setHours(23, 59, 59, 999);
-        const dailyDist = distributions.filter(d => { const date = new Date(d.date); return date >= startOfDay && date <= endOfDay; });
-        const dailyRestock = restocks.filter(r => { const date = new Date(r.date); return date >= startOfDay && date <= endOfDay; });
+        const startOfDay = new Date(selectedDate);
+        startOfDay.setHours(0, 0, 0, 0);
+
+        const endOfDay = new Date(selectedDate);
+        endOfDay.setHours(23, 59, 59, 999);
+        
+        const dailyDist = distributions.filter(d => {
+            const date = new Date(d.date);
+            return date >= startOfDay && date <= endOfDay;
+        });
+
+        const dailyRestock = restocks.filter(r => {
+            const date = new Date(r.date);
+            return date >= startOfDay && date <= endOfDay;
+        });
 
         if (dailyDist.length === 0 && dailyRestock.length === 0) {
             resultsDiv.innerHTML = `<p class="text-gray-500">No transactions recorded for ${new Date(dateString).toLocaleDateString('en-US', { dateStyle: 'long' })}.</p>`;
@@ -668,69 +813,196 @@
                     <div><p class="text-sm text-gray-600">Total Expense:</p><p class="font-bold text-red-600">Rs. ${restockCost.toFixed(2)}</p></div>
                     <div><p class="text-sm text-gray-600">Net Change:</p><p class="font-bold ${netChange >= 0 ? 'text-green-700' : 'text-red-700'}">Rs. ${netChange.toFixed(2)}</p></div>
                 </div>
-            </div>`;
+            </div>
+        `;
+
         if (dailyDist.length > 0) {
             html += `<h4 class="font-semibold text-gray-800 mt-6 mb-3">Distributions (${dailyDist.length})</h4>
-                     <div class="overflow-x-auto"><table class="w-full min-w-[500px] border-collapse"><thead class="bg-green-100"><tr class="text-left text-sm text-green-800"><th class="px-4 py-2 border-b">Time</th><th class="px-4 py-2 border-b">Product</th><th class="px-4 py-2 border-b">Shop</th><th class="px-4 py-2 border-b text-right">Sold Qty</th><th class="px-4 py-2 border-b text-right">Free Qty</th><th class="px-4 py-2 border-b text-right">Income</th></tr></thead><tbody>`;
+                     <div class="overflow-x-auto"><table class="w-full min-w-[500px] border-collapse">
+                     <thead class="bg-green-100"><tr class="text-left text-sm text-green-800">
+                        <th class="px-4 py-2 border-b">Time</th><th class="px-4 py-2 border-b">Product</th>
+                        <th class="px-4 py-2 border-b">Shop</th>
+                        <th class="px-4 py-2 border-b text-right">Sold Qty</th>
+                        <th class="px-4 py-2 border-b text-right">Free Qty</th>
+                        <th class="px-4 py-2 border-b text-right">Income</th></tr></thead>
+                     <tbody>`;
             dailyDist.sort((a, b) => new Date(b.date) - new Date(a.date)).forEach(d => {
-                html += `<tr><td class="px-4 py-2 text-sm">${new Date(d.date).toLocaleTimeString('en-US', {hour: '2-digit', minute: '2-digit'})}</td><td class="px-4 py-2 text-sm">${d.productName}</td><td class="px-4 py-2 text-sm">${d.shop}</td><td class="px-4 py-2 text-sm text-right">${d.qty.toFixed(2)}</td><td class="px-4 py-2 text-sm text-right text-yellow-600">${(d.freeQty || 0).toFixed(2)}</td><td class="px-4 py-2 text-sm text-right text-green-600">Rs. ${d.value.toFixed(2)}</td></tr>`;
+                const time = new Date(d.date).toLocaleTimeString('en-US', {hour: '2-digit', minute: '2-digit'});
+                html += `<tr><td class="px-4 py-2 text-sm">${time}</td><td class="px-4 py-2 text-sm">${d.productName}</td>
+                         <td class="px-4 py-2 text-sm">${d.shop}</td>
+                         <td class="px-4 py-2 text-sm text-right">${d.qty.toFixed(2)}</td>
+                         <td class="px-4 py-2 text-sm text-right text-yellow-600">${(d.freeQty || 0).toFixed(2)}</td>
+                         <td class="px-4 py-2 text-sm text-right text-green-600">Rs. ${d.value.toFixed(2)}</td></tr>`;
             });
             html += `</tbody></table></div>`;
         }
+
         if (dailyRestock.length > 0) {
             html += `<h4 class="font-semibold text-gray-800 mt-6 mb-3">Restocks (${dailyRestock.length})</h4>
-                     <div class="overflow-x-auto"><table class="w-full min-w-[500px] border-collapse"><thead class="bg-red-100"><tr class="text-left text-sm text-red-800"><th class="px-4 py-2 border-b">Time</th><th class="px-4 py-2 border-b">Product</th><th class="px-4 py-2 border-b text-right">Qty</th><th class="px-4 py-2 border-b text-right">Expense</th></tr></thead><tbody>`;
+                     <div class="overflow-x-auto"><table class="w-full min-w-[500px] border-collapse">
+                     <thead class="bg-red-100"><tr class="text-left text-sm text-red-800">
+                        <th class="px-4 py-2 border-b">Time</th><th class="px-4 py-2 border-b">Product</th>
+                        <th class="px-4 py-2 border-b text-right">Qty</th><th class="px-4 py-2 border-b text-right">Expense</th>
+                        </tr></thead>
+                     <tbody>`;
             dailyRestock.sort((a, b) => new Date(b.date) - new Date(a.date)).forEach(r => {
-                html += `<tr><td class="px-4 py-2 text-sm">${new Date(r.date).toLocaleTimeString('en-US', {hour: '2-digit', minute: '2-digit'})}</td><td class="px-4 py-2 text-sm">${r.productName}</td><td class="px-4 py-2 text-sm text-right">${r.qty.toFixed(2)}</td><td class="px-4 py-2 text-sm text-right text-red-600">Rs. ${r.cost.toFixed(2)}</td></tr>`;
+                const time = new Date(r.date).toLocaleTimeString('en-US', {hour: '2-digit', minute: '2-digit'});
+                html += `<tr><td class="px-4 py-2 text-sm">${time}</td><td class="px-4 py-2 text-sm">${r.productName}</td>
+                         <td class="px-4 py-2 text-sm text-right">${r.qty.toFixed(2)}</td>
+                         <td class="px-4 py-2 text-sm text-right text-red-600">Rs. ${r.cost.toFixed(2)}</td></tr>`;
             });
             html += `</tbody></table></div>`;
         }
+
         resultsDiv.innerHTML += html;
     }
+
+    // --- PDF Report Generation (Using jsPDF and autoTable) ---
 
     function generateReport() {
         const startDate = document.getElementById('reportStartDate').value;
         const endDate = document.getElementById('reportEndDate').value;
-        if (!startDate || !endDate) { alert('Please select the date range!'); return; }
+
+        if (!startDate || !endDate) {
+            alert('Please select the date range!');
+            return;
+        }
+
         const start = new Date(startDate);
-        const end = new Date(endDate); end.setHours(23, 59, 59, 999);
-        const filteredDist = distributions.filter(d => { const date = new Date(d.date); return date >= start && date <= end; });
-        const filteredRestock = restocks.filter(r => { const date = new Date(r.date); return date >= start && date <= end; });
+        const end = new Date(endDate);
+        end.setHours(23, 59, 59, 999);
+
+        // NOTE: Since distributions are limited to 200, this report only scans loaded data.
+        // For full history reporting in Nativefier, we'd need a separate load-all function,
+        // but to prevent freezing we use the current subset.
+        const filteredDist = distributions.filter(d => {
+            const date = new Date(d.date);
+            return date >= start && date <= end;
+        });
+
+        const filteredRestock = restocks.filter(r => {
+            const date = new Date(r.date);
+            return date >= start && date <= end;
+        });
 
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
+
+        // --- Summary Calculations ---
         const totalIncome = filteredDist.reduce((sum, d) => sum + d.value, 0);
         const totalExpenses = filteredRestock.reduce((sum, r) => sum + r.cost, 0);
         const netProfit = totalIncome - totalExpenses;
         const stockValue = products.reduce((sum, p) => sum + (p.buyPrice * p.stock), 0);
 
+        // --- Report Header ---
         doc.setFont('Helvetica', 'bold');
         doc.setFontSize(18);
         doc.text('Distribution Agency Financial Report', 105, 20, { align: 'center' });
+        
         doc.setFontSize(12);
-        doc.text(`Period: ${new Date(startDate).toLocaleDateString('en-US')} - ${new Date(endDate).toLocaleDateString('en-US')}`, 105, 30, { align: 'center' });
+        const reportDateRange = `${new Date(startDate).toLocaleDateString('en-US')} - ${new Date(endDate).toLocaleDateString('en-US')}`;
+        doc.text(`Period: ${reportDateRange}`, 105, 30, { align: 'center' });
 
         let y = 45;
-        doc.setFontSize(14); doc.text('1. Financial Summary', 20, y); y += 5;
-        doc.autoTable({ startY: y + 5, head: [["Metric", "Value"]], body: [["Total Sales Income", `Rs. ${totalIncome.toFixed(2)}`], ["Total Restock Cost (Expenses)", `Rs. ${totalExpenses.toFixed(2)}`], ["Net Profit/Loss", `Rs. ${netProfit.toFixed(2)}`], ["Current Stock Value (at Cost)", `Rs. ${stockValue.toFixed(2)}`]], theme: 'grid', headStyles: { fillColor: [59, 130, 246] }, columnStyles: { 1: { halign: 'right' } } });
+
+        // --- 1. Financial Summary Table ---
+        doc.setFontSize(14);
+        doc.text('1. Financial Summary', 20, y);
+        y += 5;
+
+        const summaryHeaders = ["Metric", "Value"];
+        const summaryData = [
+            ["Total Sales Income", `Rs. ${totalIncome.toFixed(2)}`],
+            ["Total Restock Cost (Expenses)", `Rs. ${totalExpenses.toFixed(2)}`],
+            ["Net Profit/Loss", `Rs. ${netProfit.toFixed(2)}`],
+            ["Current Stock Value (at Cost)", `Rs. ${stockValue.toFixed(2)}`]
+        ];
+        
+        doc.autoTable({
+            startY: y + 5,
+            head: [summaryHeaders],
+            body: summaryData,
+            theme: 'grid',
+            headStyles: { fillColor: [59, 130, 246] },
+            columnStyles: { 1: { halign: 'right' } }
+        });
         y = doc.autoTable.previous.finalY + 15;
 
-        doc.setFontSize(14); doc.text('2. Distribution (Sales) Details', 20, y); y += 5;
-        doc.autoTable({ startY: y + 5, head: [["Date", "Product", "Shop", "Sold Qty", "Free Qty", "Sale Value"]], body: filteredDist.map(d => [new Date(d.date).toLocaleDateString('en-US'), d.productName, d.shop, d.qty.toFixed(2), (d.freeQty || 0).toFixed(2), `Rs. ${d.value.toFixed(2)}`]), theme: 'striped', headStyles: { fillColor: [75, 175, 80] }, columnStyles: { 3: { halign: 'right' }, 4: { halign: 'right' }, 5: { halign: 'right' } } });
-        y = doc.autoTable.previous.finalY + 15;
-        if (y > 250) { doc.addPage(); y = 20; }
 
-        doc.setFontSize(14); doc.text('3. Restock (Expense) Details', 20, y); y += 5;
-        doc.autoTable({ startY: y + 5, head: [["Date", "Product", "Qty", "Cost (Expense)"]], body: filteredRestock.map(r => [new Date(r.date).toLocaleDateString('en-US'), r.productName, r.qty.toFixed(2), `Rs. ${r.cost.toFixed(2)}`]), theme: 'striped', headStyles: { fillColor: [239, 68, 68] }, columnStyles: { 2: { halign: 'right' }, 3: { halign: 'right' } } });
+        // --- 2. Distribution Details Table ---
+        doc.setFontSize(14);
+        doc.text('2. Distribution (Sales) Details', 20, y);
+        y += 5;
+
+        const distHeaders = ["Date", "Product", "Shop", "Sold Qty", "Free Qty", "Sale Value"];
+        const distData = filteredDist.map(d => [
+            new Date(d.date).toLocaleDateString('en-US'),
+            d.productName,
+            d.shop,
+            d.qty.toFixed(2),
+            (d.freeQty || 0).toFixed(2),
+            `Rs. ${d.value.toFixed(2)}`
+        ]);
+
+        doc.autoTable({
+            startY: y + 5,
+            head: [distHeaders],
+            body: distData,
+            theme: 'striped',
+            headStyles: { fillColor: [75, 175, 80] },
+            columnStyles: {
+                3: { halign: 'right' },
+                4: { halign: 'right' },
+                5: { halign: 'right' }
+            }
+        });
+        y = doc.autoTable.previous.finalY + 15;
+        if (y > 250) {
+            doc.addPage();
+            y = 20;
+        }
+
+
+        // --- 3. Restock Details Table ---
+        doc.setFontSize(14);
+        doc.text('3. Restock (Expense) Details', 20, y);
+        y += 5;
+
+        const restockHeaders = ["Date", "Product", "Qty", "Cost (Expense)"];
+        const restockData = filteredRestock.map(r => [
+            new Date(r.date).toLocaleDateString('en-US'),
+            r.productName,
+            r.qty.toFixed(2),
+            `Rs. ${r.cost.toFixed(2)}`
+        ]);
+
+        doc.autoTable({
+            startY: y + 5,
+            head: [restockHeaders],
+            body: restockData,
+            theme: 'striped',
+            headStyles: { fillColor: [239, 68, 68] },
+            columnStyles: {
+                2: { halign: 'right' },
+                3: { halign: 'right' }
+            }
+        });
 
         doc.save(`Distribution_Report_${startDate}_${endDate}.pdf`);
     }
 
+    // --- Initialization ---
+
+    // Initialize PDF report date pickers to show the last 30 days
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('reportEndDate').value = today;
-    const thirtyDaysAgo = new Date(); thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
     document.getElementById('reportStartDate').value = thirtyDaysAgo.toISOString().split('T')[0];
+    
+    // Initial dot setup
     updateDots();
+
 </script>
 </body>
 </html>
