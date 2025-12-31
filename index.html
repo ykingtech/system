@@ -736,14 +736,19 @@
     function updateProductSelects() {
         const distSelect = document.getElementById('distProduct');
         const restockSelect = document.getElementById('restockProduct');
+        
+        // Preserve current selection
+        const currentDistValue = distSelect.value;
+        const currentRestockValue = restockSelect.value;
+
         const options = products.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+        
         distSelect.innerHTML = '<option value="">Select Product</option>' + options;
         restockSelect.innerHTML = '<option value="">Select Product</option>' + options;
 
-        const distSearch = document.getElementById('distProductSearch');
-        const restockSearch = document.getElementById('restockProductSearch');
-        if (distSearch) distSearch.value = '';
-        if (restockSearch) restockSearch.value = '';
+        // Restore selection
+        if (currentDistValue) distSelect.value = currentDistValue;
+        if (currentRestockValue) restockSelect.value = currentRestockValue;
     }
     
     function setupDailyHistoryDate() {
