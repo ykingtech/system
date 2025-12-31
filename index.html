@@ -12,12 +12,21 @@
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; }
-        .glass { backdrop-filter: blur(10px); background: rgba(255, 255, 255, 0.85); }
-        .shadow-custom { box-shadow: 0 10px 40px rgba(0,0,0,0.1); }
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
+        
+        /* වේගය වැඩි කිරීමට වෙනස් කළ කොටස (No Blur, Solid Color) */
+        .glass { 
+            background: #ffffff; 
+            border: 1px solid #e5e7eb; /* Blur වෙනුවට පාටක් සහ ඉරක් */
+        }
+        
+        /* Shadows අඩු කළා */
+        .shadow-custom { box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        
         input:focus, select:focus, textarea:focus { outline: none; ring: 2px; ring-color: #3b82f6; }
         .fade-in { animation: fadeIn 0.3s ease-in; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
         /* PIN Login Styles */
         .key:hover { background: #2563eb; color: white; }
     </style>
@@ -937,3 +946,4 @@
 </script>
 </body>
 </html>
+
