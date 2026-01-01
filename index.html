@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> Distribution System</title>
+    <title>Distribution System</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
@@ -17,20 +17,23 @@
         .shadow-custom { box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         input:focus, select:focus, textarea:focus { outline: none; ring: 2px; ring-color: #3b82f6; }
         .key:active { background: #2563eb; color: white; transform: scale(0.95); }
+        .d-none { display: none !important; }
     </style>
 </head>
-<body class="bg-gray-100 min-h-screen">
+<body class="bg-gray-100 min-h-screen flex flex-col">
 
-<div id="loginScreen" class="fixed inset-0 z-[9999] bg-gray-100 flex items-center justify-center p-4" style="display: flex;">
+<div id="loginScreen" class="fixed inset-0 z-[5000] bg-gray-100 flex items-center justify-center p-4">
     <div class="glass rounded-2xl shadow-xl p-8 w-full max-w-sm text-center">
-        <h1 class="text-3xl font-bold text-gray-800 mb-2"> Login</h1>
+        <h1 class="text-3xl font-bold text-gray-800 mb-2">Login</h1>
         <p class="text-gray-500 mb-6">Enter PIN to access system</p>
+        
         <div class="flex justify-center space-x-3 mb-6">
             <div class="w-5 h-5 bg-gray-300 rounded-full transition-colors" id="dot1"></div>
             <div class="w-5 h-5 bg-gray-300 rounded-full transition-colors" id="dot2"></div>
             <div class="w-5 h-5 bg-gray-300 rounded-full transition-colors" id="dot3"></div>
             <div class="w-5 h-5 bg-gray-300 rounded-full transition-colors" id="dot4"></div>
         </div>
+
         <div class="grid grid-cols-3 gap-4 text-xl font-bold select-none mb-4">
             <div class="key bg-white p-4 rounded-xl shadow cursor-pointer hover:bg-blue-50" onclick="pressKey('1')">1</div>
             <div class="key bg-white p-4 rounded-xl shadow cursor-pointer hover:bg-blue-50" onclick="pressKey('2')">2</div>
@@ -46,210 +49,268 @@
             <div class="key bg-red-500 text-white p-4 rounded-xl shadow cursor-pointer hover:bg-red-600" onclick="deleteKey()">⌫</div>
         </div>
         <p id="errorMsg" class="text-red-600 hidden font-bold">Incorrect PIN!</p>
+        
+        <div class="mt-6 text-xs text-gray-400">
+            Powered by <span class="font-semibold text-gray-500">The Kina Solutions</span>
+        </div>
     </div>
 </div>
 
-<div id="mainSystem" class="min-h-screen pb-10" style="display: none;">
+<div id="adminPinModal" class="fixed inset-0 z-[6000] bg-black/60 hidden items-center justify-center p-4">
+    <div class="glass rounded-2xl shadow-2xl p-6 w-full max-w-xs text-center relative animate-[fadeIn_0.2s_ease-out]">
+        <button onclick="closeAdminModal()" class="absolute top-2 right-3 text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+        <h2 class="text-xl font-bold text-gray-800 mb-1">Admin Verification</h2>
+        <p class="text-xs text-gray-500 mb-4" id="adminActionText">Enter PIN to confirm action</p>
+        
+        <div class="flex justify-center space-x-2 mb-4">
+            <div class="w-4 h-4 bg-gray-300 rounded-full transition-colors" id="adot1"></div>
+            <div class="w-4 h-4 bg-gray-300 rounded-full transition-colors" id="adot2"></div>
+            <div class="w-4 h-4 bg-gray-300 rounded-full transition-colors" id="adot3"></div>
+            <div class="w-4 h-4 bg-gray-300 rounded-full transition-colors" id="adot4"></div>
+        </div>
 
-    <header class="glass border-b border-gray-200 sticky top-0 z-40 bg-white/80 backdrop-blur-md">
+        <div class="grid grid-cols-3 gap-2 text-lg font-bold select-none">
+            <div class="key bg-gray-50 p-3 rounded-lg shadow-sm cursor-pointer active:bg-blue-100" onclick="pressAdminKey('1')">1</div>
+            <div class="key bg-gray-50 p-3 rounded-lg shadow-sm cursor-pointer active:bg-blue-100" onclick="pressAdminKey('2')">2</div>
+            <div class="key bg-gray-50 p-3 rounded-lg shadow-sm cursor-pointer active:bg-blue-100" onclick="pressAdminKey('3')">3</div>
+            <div class="key bg-gray-50 p-3 rounded-lg shadow-sm cursor-pointer active:bg-blue-100" onclick="pressAdminKey('4')">4</div>
+            <div class="key bg-gray-50 p-3 rounded-lg shadow-sm cursor-pointer active:bg-blue-100" onclick="pressAdminKey('5')">5</div>
+            <div class="key bg-gray-50 p-3 rounded-lg shadow-sm cursor-pointer active:bg-blue-100" onclick="pressAdminKey('6')">6</div>
+            <div class="key bg-gray-50 p-3 rounded-lg shadow-sm cursor-pointer active:bg-blue-100" onclick="pressAdminKey('7')">7</div>
+            <div class="key bg-gray-50 p-3 rounded-lg shadow-sm cursor-pointer active:bg-blue-100" onclick="pressAdminKey('8')">8</div>
+            <div class="key bg-gray-50 p-3 rounded-lg shadow-sm cursor-pointer active:bg-blue-100" onclick="pressAdminKey('9')">9</div>
+            <div></div>
+            <div class="key bg-gray-50 p-3 rounded-lg shadow-sm cursor-pointer active:bg-blue-100" onclick="pressAdminKey('0')">0</div>
+            <div class="key bg-red-100 text-red-600 p-3 rounded-lg shadow-sm cursor-pointer active:bg-red-200" onclick="deleteAdminKey()">⌫</div>
+        </div>
+    </div>
+</div>
+
+<div id="mainSystem" class="min-h-screen flex flex-col" style="display: none;">
+
+    <header class="glass border-b border-gray-200 sticky top-0 z-40 bg-white/90 backdrop-blur">
         <div class="container mx-auto px-4 py-4">
             <div class="flex justify-between items-center">
                 <div class="flex items-center space-x-3">
                     <div class="bg-blue-600 w-10 h-10 rounded-lg flex items-center justify-center text-white font-bold text-xl">C</div>
                     <h1 class="text-xl font-bold text-gray-800">Distribution System</h1>
                 </div>
-                <button onclick="logout()" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition font-medium text-sm">Logout</button>
+                <button onclick="logout()" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition text-sm font-medium">Logout</button>
             </div>
         </div>
     </header>
 
     <div class="container mx-auto px-4 py-6 overflow-x-auto">
         <div class="glass rounded-xl p-2 inline-flex space-x-2 shadow-custom min-w-max bg-white">
-            <button onclick="showTab('products')" class="tab-btn px-4 py-2 rounded-lg font-medium transition text-sm md:text-base" data-tab="products">Products</button>
-            <button onclick="showTab('distribution')" class="tab-btn px-4 py-2 rounded-lg font-medium transition text-sm md:text-base" data-tab="distribution">Sales</button>
-            <button onclick="showTab('returns')" class="tab-btn px-4 py-2 rounded-lg font-medium transition text-sm md:text-base" data-tab="returns">Returns</button>
-            <button onclick="showTab('restock')" class="tab-btn px-4 py-2 rounded-lg font-medium transition text-sm md:text-base" data-tab="restock">Restock</button>
-            <button onclick="showTab('ledger')" class="tab-btn px-4 py-2 rounded-lg font-medium transition text-sm md:text-base" data-tab="ledger">Ledger</button>
-            <button onclick="showTab('reports')" class="tab-btn px-4 py-2 rounded-lg font-medium transition text-sm md:text-base" data-tab="reports">Reports</button>
+            <button onclick="showTab('products')" class="tab-btn px-4 py-2 rounded-lg font-medium transition text-sm" data-tab="products">Products</button>
+            <button onclick="showTab('distribution')" class="tab-btn px-4 py-2 rounded-lg font-medium transition text-sm" data-tab="distribution">Sales</button>
+            <button onclick="showTab('returns')" class="tab-btn px-4 py-2 rounded-lg font-medium transition text-sm" data-tab="returns">Returns</button>
+            <button onclick="showTab('restock')" class="tab-btn px-4 py-2 rounded-lg font-medium transition text-sm" data-tab="restock">Restock</button>
+            <button onclick="showTab('ledger')" class="tab-btn px-4 py-2 rounded-lg font-medium transition text-sm" data-tab="ledger">Ledger</button>
+            <button onclick="showTab('reports')" class="tab-btn px-4 py-2 rounded-lg font-medium transition text-sm" data-tab="reports">Reports</button>
         </div>
     </div>
 
-    <div id="productsTab" class="container mx-auto px-4 pb-8 tab-content">
-        <div class="glass rounded-xl shadow-custom p-6 mb-6">
-            <h2 class="text-2xl font-bold text-gray-800 mb-6" id="productFormTitle">Add New Product</h2>
-            <input type="hidden" id="editingProductId">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-                <input type="text" id="prodName" placeholder="Product Name" class="px-4 py-2 border border-gray-300 rounded-lg focus:border-blue-500">
-                <input type="number" id="prodBuyPrice" placeholder="Buy Price" class="px-4 py-2 border border-gray-300 rounded-lg focus:border-blue-500">
-                <input type="number" id="prodSellPrice" placeholder="Sell Price" class="px-4 py-2 border border-gray-300 rounded-lg focus:border-blue-500">
-                <input type="number" id="prodStock" placeholder="Stock" class="px-4 py-2 border border-gray-300 rounded-lg focus:border-blue-500">
-                <button id="saveProductBtn" onclick="saveProduct()" class="bg-green-600 text-white py-2 rounded-lg font-bold hover:bg-green-700 transition">Add</button>
-                <button id="cancelEditBtn" onclick="cancelEdit()" class="hidden bg-gray-500 text-white py-2 rounded-lg font-bold hover:bg-gray-600 transition">Cancel</button>
-            </div>
-        </div>
-        <div class="glass rounded-xl shadow-custom p-6">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-xl font-bold text-gray-800">Stock List</h2>
-                <input type="text" id="productListSearch" placeholder="Search..." class="px-4 py-2 border rounded-lg focus:border-blue-500" onkeyup="updateProductsTable()">
-            </div>
-            <div class="overflow-x-auto rounded-lg border">
-                <table class="w-full text-sm text-left text-gray-700">
-                    <thead class="bg-blue-600 text-white uppercase">
-                        <tr><th class="px-4 py-3">Name</th><th class="px-4 py-3 text-right">Buy</th><th class="px-4 py-3 text-right">Sell</th><th class="px-4 py-3 text-right">Stock</th><th class="px-4 py-3 text-right">Value</th><th class="px-4 py-3 text-center">Action</th></tr>
-                    </thead>
-                    <tbody id="productsTableBody" class="divide-y divide-gray-200"></tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <div id="distributionTab" class="container mx-auto px-4 pb-8 tab-content hidden">
-        <div class="glass rounded-xl shadow-custom p-6 mb-6">
-            <h2 class="text-2xl font-bold text-gray-800 mb-6">New Sale</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-                <div class="relative lg:col-span-2">
-                    <select id="distProduct" class="hidden"><option value="">Select</option></select>
-                    <input type="text" id="distProductSearch" placeholder="Search Product..." class="w-full px-4 py-2 border rounded-lg focus:border-blue-500" onfocus="showDropdown('dist')" onblur="hideDropdown('dist', event)" onkeyup="filterProducts('dist')">
-                    <div id="distProductDropdown" class="absolute z-50 w-full mt-1 bg-white border rounded-lg shadow-xl max-h-60 overflow-y-auto hidden"></div>
+    <div class="flex-grow">
+        
+        <div id="productsTab" class="container mx-auto px-4 pb-8 tab-content">
+            <div class="glass rounded-xl shadow-custom p-6 mb-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6" id="productFormTitle">Add New Product</h2>
+                <input type="hidden" id="editingProductId">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                    <input type="text" id="prodName" placeholder="Product Name" class="px-4 py-2 border border-gray-300 rounded-lg focus:border-blue-500">
+                    <input type="number" id="prodBuyPrice" placeholder="Buy Price" class="px-4 py-2 border border-gray-300 rounded-lg focus:border-blue-500">
+                    <input type="number" id="prodSellPrice" placeholder="Sell Price" class="px-4 py-2 border border-gray-300 rounded-lg focus:border-blue-500">
+                    <input type="number" id="prodStock" placeholder="Stock" class="px-4 py-2 border border-gray-300 rounded-lg focus:border-blue-500">
+                    <button id="saveProductBtn" onclick="saveProduct()" class="bg-green-600 text-white py-2 rounded-lg font-bold hover:bg-green-700 transition">Add</button>
+                    <button id="cancelEditBtn" onclick="cancelEdit()" class="hidden bg-gray-500 text-white py-2 rounded-lg font-bold hover:bg-gray-600 transition">Cancel</button>
                 </div>
-                <input type="text" id="distShop" placeholder="Shop Name" class="px-4 py-2 border rounded-lg focus:border-blue-500">
-                <input type="number" id="distQty" placeholder="Sold Qty" class="px-4 py-2 border rounded-lg focus:border-blue-500">
-                <input type="number" id="distFreeQty" placeholder="Free Qty" class="px-4 py-2 border rounded-lg bg-yellow-50 focus:border-yellow-500">
-                <button onclick="addDistribution()" class="bg-blue-600 text-white py-2 rounded-lg font-bold lg:col-span-5 hover:bg-blue-700 transition">Submit Sale</button>
             </div>
-        </div>
-        <div class="glass rounded-xl shadow-custom p-6">
-            <h2 class="text-xl font-bold mb-4">Recent Sales</h2>
-            <div class="overflow-x-auto rounded-lg border">
-                <table class="w-full text-sm text-left text-gray-700">
-                    <thead class="bg-blue-600 text-white uppercase">
-                        <tr><th class="p-3">Date</th><th class="p-3">Product</th><th class="p-3">Shop</th><th class="p-3 text-right">Qty</th><th class="p-3 text-right">Free</th><th class="p-3 text-right">Total</th></tr>
-                    </thead>
-                    <tbody id="distributionTableBody" class="divide-y divide-gray-200"></tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <div id="returnsTab" class="container mx-auto px-4 pb-8 tab-content hidden">
-        <div class="glass rounded-xl shadow-custom p-6 mb-6">
-            <h2 class="text-2xl font-bold text-gray-800 mb-6">Product Returns</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-                <div class="relative lg:col-span-2">
-                    <select id="retProduct" class="hidden"><option value="">Select</option></select>
-                    <input type="text" id="retProductSearch" placeholder="Search Product..." class="w-full px-4 py-2 border rounded-lg focus:border-blue-500" onfocus="showDropdown('ret')" onblur="hideDropdown('ret', event)" onkeyup="filterProducts('ret')">
-                    <div id="retProductDropdown" class="absolute z-50 w-full mt-1 bg-white border rounded-lg shadow-xl max-h-60 overflow-y-auto hidden"></div>
+            <div class="glass rounded-xl shadow-custom p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-bold text-gray-800">Stock List</h2>
+                    <input type="text" id="productListSearch" placeholder="Search..." class="px-4 py-2 border rounded-lg focus:border-blue-500" onkeyup="updateProductsTable()">
                 </div>
-                <input type="text" id="retShop" placeholder="Shop Name" class="px-4 py-2 border rounded-lg focus:border-blue-500">
-                <input type="number" id="retQty" placeholder="Return Qty" class="px-4 py-2 border rounded-lg focus:border-blue-500">
-                
-                <select id="retReason" class="px-4 py-2 border rounded-lg focus:border-blue-500">
-                    <option value="Unsold">Unsold / Not Sold</option>
-                    <option value="Expired">Expired</option>
-                    <option value="Damaged">Damaged</option>
-                </select>
-
-                <div class="flex items-center gap-2 lg:col-span-5 bg-orange-50 p-2 rounded border border-orange-200">
-                    <input type="checkbox" id="retAddToStock" class="w-5 h-5 text-orange-600 rounded focus:ring-orange-500" checked>
-                    <label for="retAddToStock" class="text-sm font-bold text-orange-800 cursor-pointer">Add back to Stock? (Uncheck if Damaged/Expired)</label>
+                <div class="overflow-x-auto rounded-lg border">
+                    <table class="w-full text-sm text-left text-gray-700">
+                        <thead class="bg-blue-600 text-white uppercase">
+                            <tr><th class="px-4 py-3">Name</th><th class="px-4 py-3 text-right">Buy</th><th class="px-4 py-3 text-right">Sell</th><th class="px-4 py-3 text-right">Stock</th><th class="px-4 py-3 text-right">Value</th><th class="px-4 py-3 text-center">Action</th></tr>
+                        </thead>
+                        <tbody id="productsTableBody" class="divide-y divide-gray-200"></tbody>
+                    </table>
                 </div>
-
-                <button onclick="addReturn()" class="bg-orange-600 text-white py-2 rounded-lg font-bold lg:col-span-5 hover:bg-orange-700 transition">Submit Return</button>
             </div>
         </div>
-        <div class="glass rounded-xl shadow-custom p-6">
-            <h2 class="text-xl font-bold mb-4">Recent Returns</h2>
-            <div class="overflow-x-auto rounded-lg border">
-                <table class="w-full text-sm text-left text-gray-700">
-                    <thead class="bg-orange-600 text-white uppercase">
-                        <tr><th class="p-3">Date</th><th class="p-3">Product</th><th class="p-3">Shop</th><th class="p-3">Reason</th><th class="p-3 text-right">Qty</th><th class="p-3 text-right">Value (Deducted)</th></tr>
-                    </thead>
-                    <tbody id="returnsTableBody" class="divide-y divide-gray-200"></tbody>
-                </table>
-            </div>
-        </div>
-    </div>
 
-    <div id="restockTab" class="container mx-auto px-4 pb-8 tab-content hidden">
-        <div class="glass rounded-xl shadow-custom p-6 mb-6">
-            <h2 class="text-2xl font-bold text-gray-800 mb-6">Restock Inventory</h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div class="relative">
-                    <select id="restockProduct" class="hidden"><option value="">Select</option></select>
-                    <input type="text" id="restockProductSearch" placeholder="Search Product..." class="w-full px-4 py-2 border rounded-lg focus:border-blue-500" onfocus="showDropdown('restock')" onblur="hideDropdown('restock', event)" onkeyup="filterProducts('restock')">
-                    <div id="restockProductDropdown" class="absolute z-50 w-full mt-1 bg-white border rounded-lg shadow-xl max-h-60 overflow-y-auto hidden"></div>
+        <div id="distributionTab" class="container mx-auto px-4 pb-8 tab-content hidden">
+            <div class="glass rounded-xl shadow-custom p-6 mb-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">New Sale</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                    <div class="relative lg:col-span-2">
+                        <select id="distProduct" class="hidden"><option value="">Select</option></select>
+                        <input type="text" id="distProductSearch" placeholder="Search Product..." class="w-full px-4 py-2 border rounded-lg focus:border-blue-500" onfocus="showDropdown('dist')" onblur="hideDropdown('dist', event)" onkeyup="filterProducts('dist')">
+                        <div id="distProductDropdown" class="absolute z-50 w-full mt-1 bg-white border rounded-lg shadow-xl max-h-60 overflow-y-auto hidden"></div>
+                    </div>
+                    <input type="text" id="distShop" placeholder="Shop Name" class="px-4 py-2 border rounded-lg focus:border-blue-500">
+                    <input type="number" id="distQty" placeholder="Sold Qty" class="px-4 py-2 border rounded-lg focus:border-blue-500">
+                    <input type="number" id="distFreeQty" placeholder="Free Qty" class="px-4 py-2 border rounded-lg bg-yellow-50 focus:border-yellow-500">
+                    <button onclick="addDistribution()" class="bg-blue-600 text-white py-2 rounded-lg font-bold lg:col-span-5 hover:bg-blue-700 transition">Submit Sale</button>
                 </div>
-                <input type="number" id="restockQty" placeholder="Quantity" class="px-4 py-2 border rounded-lg focus:border-blue-500">
-                <button onclick="addRestock()" class="bg-purple-600 text-white py-2 rounded-lg font-bold hover:bg-purple-700 transition">Restock</button>
+            </div>
+            <div class="glass rounded-xl shadow-custom p-6">
+                <h2 class="text-xl font-bold mb-4">Recent Sales</h2>
+                <div class="overflow-x-auto rounded-lg border">
+                    <table class="w-full text-sm text-left text-gray-700">
+                        <thead class="bg-blue-600 text-white uppercase">
+                            <tr><th class="p-3">Date</th><th class="p-3">Product</th><th class="p-3">Shop</th><th class="p-3 text-right">Qty</th><th class="p-3 text-right">Free</th><th class="p-3 text-right">Total</th></tr>
+                        </thead>
+                        <tbody id="distributionTableBody" class="divide-y divide-gray-200"></tbody>
+                    </table>
+                </div>
             </div>
         </div>
-        <div class="glass rounded-xl shadow-custom p-6">
-            <h2 class="text-xl font-bold mb-4">Recent Restocks</h2>
-            <div class="overflow-x-auto rounded-lg border">
-                <table class="w-full text-sm text-left text-gray-700">
-                    <thead class="bg-purple-600 text-white uppercase">
-                        <tr><th class="p-3">Date</th><th class="p-3">Product</th><th class="p-3 text-right">Qty</th><th class="p-3 text-right">Cost</th></tr>
-                    </thead>
-                    <tbody id="restockTableBody" class="divide-y divide-gray-200"></tbody>
-                </table>
-            </div>
-        </div>
-    </div>
 
-    <div id="ledgerTab" class="container mx-auto px-4 pb-8 tab-content hidden">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
-            <div class="glass p-4 rounded-xl bg-green-600 text-white shadow-lg">
-                <p class="text-sm opacity-80">Total Income</p><p class="text-2xl font-bold" id="totalIncome">Rs. 0.00</p>
-            </div>
-            <div class="glass p-4 rounded-xl bg-red-600 text-white shadow-lg">
-                <p class="text-sm opacity-80">Expenses</p><p class="text-2xl font-bold" id="totalExpenses">Rs. 0.00</p>
-            </div>
-            <div class="glass p-4 rounded-xl bg-orange-500 text-white shadow-lg">
-                <p class="text-sm opacity-80">Returns</p><p class="text-2xl font-bold" id="totalReturnsVal">Rs. 0.00</p>
-            </div>
-            <div class="glass p-4 rounded-xl bg-blue-700 text-white shadow-lg">
-                <p class="text-sm opacity-80">Net Profit</p><p class="text-2xl font-bold" id="netProfit">Rs. 0.00</p>
-            </div>
-            <div class="glass p-4 rounded-xl bg-gray-800 text-white shadow-lg">
-                <p class="text-sm opacity-80">Stock Value</p><p class="text-2xl font-bold" id="stockValue">Rs. 0.00</p>
-            </div>
-        </div>
-        <div class="glass p-6 rounded-xl border border-gray-200">
-            <h2 class="font-bold mb-4 text-gray-800 text-lg">Stock Overview</h2>
-            <div class="overflow-x-auto rounded-lg border">
-                <table class="w-full text-sm text-left text-gray-700">
-                    <thead class="bg-gray-800 text-white uppercase">
-                        <tr><th class="p-3">Product</th><th class="p-3 text-right">Stock</th><th class="p-3 text-right">Cost Value</th></tr>
-                    </thead>
-                    <tbody id="stockValueTableBody" class="divide-y divide-gray-200"></tbody>
-                </table>
-            </div>
-        </div>
-    </div>
+        <div id="returnsTab" class="container mx-auto px-4 pb-8 tab-content hidden">
+            <div class="glass rounded-xl shadow-custom p-6 mb-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">Product Returns</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                    <div class="relative lg:col-span-2">
+                        <select id="retProduct" class="hidden"><option value="">Select</option></select>
+                        <input type="text" id="retProductSearch" placeholder="Search Product..." class="w-full px-4 py-2 border rounded-lg focus:border-blue-500" onfocus="showDropdown('ret')" onblur="hideDropdown('ret', event)" onkeyup="filterProducts('ret')">
+                        <div id="retProductDropdown" class="absolute z-50 w-full mt-1 bg-white border rounded-lg shadow-xl max-h-60 overflow-y-auto hidden"></div>
+                    </div>
+                    <input type="text" id="retShop" placeholder="Shop Name" class="px-4 py-2 border rounded-lg focus:border-blue-500">
+                    <input type="number" id="retQty" placeholder="Return Qty" class="px-4 py-2 border rounded-lg focus:border-blue-500">
+                    
+                    <select id="retReason" class="px-4 py-2 border rounded-lg focus:border-blue-500">
+                        <option value="Unsold">Unsold / Not Sold</option>
+                        <option value="Expired">Expired</option>
+                        <option value="Damaged">Damaged</option>
+                    </select>
 
-    <div id="reportsTab" class="container mx-auto px-4 pb-8 tab-content hidden">
-        <div class="glass p-6 rounded-xl border border-gray-200">
-            <h2 class="text-2xl font-bold mb-6 text-gray-800">Generate Reports</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <div class="flex items-center gap-2 lg:col-span-5 bg-orange-50 p-2 rounded border border-orange-200">
+                        <input type="checkbox" id="retAddToStock" class="w-5 h-5 text-orange-600 rounded focus:ring-orange-500" checked>
+                        <label for="retAddToStock" class="text-sm font-bold text-orange-800 cursor-pointer">Add back to Stock? (Uncheck if Damaged/Expired)</label>
+                    </div>
+
+                    <button onclick="addReturn()" class="bg-orange-600 text-white py-2 rounded-lg font-bold lg:col-span-5 hover:bg-orange-700 transition">Submit Return</button>
+                </div>
+            </div>
+            <div class="glass rounded-xl shadow-custom p-6">
+                <h2 class="text-xl font-bold mb-4">Recent Returns</h2>
+                <div class="overflow-x-auto rounded-lg border">
+                    <table class="w-full text-sm text-left text-gray-700">
+                        <thead class="bg-orange-600 text-white uppercase">
+                            <tr><th class="p-3">Date</th><th class="p-3">Product</th><th class="p-3">Shop</th><th class="p-3">Reason</th><th class="p-3 text-right">Qty</th><th class="p-3 text-right">Value (Deducted)</th></tr>
+                        </thead>
+                        <tbody id="returnsTableBody" class="divide-y divide-gray-200"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="restockTab" class="container mx-auto px-4 pb-8 tab-content hidden">
+            <div class="glass rounded-xl shadow-custom p-6 mb-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">Restock Inventory</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="relative">
+                        <select id="restockProduct" class="hidden"><option value="">Select</option></select>
+                        <input type="text" id="restockProductSearch" placeholder="Search Product..." class="w-full px-4 py-2 border rounded-lg focus:border-blue-500" onfocus="showDropdown('restock')" onblur="hideDropdown('restock', event)" onkeyup="filterProducts('restock')">
+                        <div id="restockProductDropdown" class="absolute z-50 w-full mt-1 bg-white border rounded-lg shadow-xl max-h-60 overflow-y-auto hidden"></div>
+                    </div>
+                    <input type="number" id="restockQty" placeholder="Quantity" class="px-4 py-2 border rounded-lg focus:border-blue-500">
+                    <button onclick="addRestock()" class="bg-purple-600 text-white py-2 rounded-lg font-bold hover:bg-purple-700 transition">Restock</button>
+                </div>
+            </div>
+            <div class="glass rounded-xl shadow-custom p-6">
+                <h2 class="text-xl font-bold mb-4">Recent Restocks</h2>
+                <div class="overflow-x-auto rounded-lg border">
+                    <table class="w-full text-sm text-left text-gray-700">
+                        <thead class="bg-purple-600 text-white uppercase">
+                            <tr><th class="p-3">Date</th><th class="p-3">Product</th><th class="p-3 text-right">Qty</th><th class="p-3 text-right">Cost</th></tr>
+                        </thead>
+                        <tbody id="restockTableBody" class="divide-y divide-gray-200"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="ledgerTab" class="container mx-auto px-4 pb-8 tab-content hidden">
+            
+            <div class="glass p-4 rounded-xl mb-6 border border-blue-100 flex flex-wrap gap-4 items-end">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
-                    <input type="date" id="reportStartDate" class="w-full border p-2 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">From</label>
+                    <input type="date" id="ledgerStart" class="border p-2 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-gray-700" onchange="filterLedger()">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">End Date</label>
-                    <input type="date" id="reportEndDate" class="w-full border p-2 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">To</label>
+                    <input type="date" id="ledgerEnd" class="border p-2 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-gray-700" onchange="filterLedger()">
+                </div>
+                <button onclick="resetLedgerDates()" class="bg-blue-100 hover:bg-blue-200 text-blue-800 px-4 py-2 rounded-lg font-medium transition flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                    Reset to This Month
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+                <div class="glass p-4 rounded-xl bg-green-600 text-white shadow-lg">
+                    <p class="text-sm opacity-80">Income (Selected Period)</p><p class="text-2xl font-bold" id="totalIncome">Rs. 0.00</p>
+                </div>
+                <div class="glass p-4 rounded-xl bg-red-600 text-white shadow-lg">
+                    <p class="text-sm opacity-80">Expenses (Selected Period)</p><p class="text-2xl font-bold" id="totalExpenses">Rs. 0.00</p>
+                </div>
+                <div class="glass p-4 rounded-xl bg-orange-500 text-white shadow-lg">
+                    <p class="text-sm opacity-80">Returns (Selected Period)</p><p class="text-2xl font-bold" id="totalReturnsVal">Rs. 0.00</p>
+                </div>
+                <div class="glass p-4 rounded-xl bg-blue-700 text-white shadow-lg">
+                    <p class="text-sm opacity-80">Net Profit (Selected Period)</p><p class="text-2xl font-bold" id="netProfit">Rs. 0.00</p>
+                </div>
+                <div class="glass p-4 rounded-xl bg-gray-800 text-white shadow-lg">
+                    <p class="text-sm opacity-80">Current Stock Value (Total)</p><p class="text-2xl font-bold" id="stockValue">Rs. 0.00</p>
                 </div>
             </div>
-            <div class="flex flex-col gap-3">
-                <button onclick="generateFinancialReport()" class="bg-blue-600 text-white py-3 px-6 rounded-lg font-bold hover:bg-blue-700 transition flex items-center justify-center gap-2">
-                    <span>📄</span> Download Financial Summary
-                </button>
-                <button onclick="generateAuditReport()" class="bg-gray-800 text-white py-3 px-6 rounded-lg font-bold hover:bg-gray-900 transition flex items-center justify-center gap-2">
-                    <span>📊</span> Download Detailed Audit Report
-                </button>
+            <div class="glass p-6 rounded-xl border border-gray-200">
+                <h2 class="font-bold mb-4 text-gray-800 text-lg">Current Stock Overview</h2>
+                <div class="overflow-x-auto rounded-lg border">
+                    <table class="w-full text-sm text-left text-gray-700">
+                        <thead class="bg-gray-800 text-white uppercase">
+                            <tr><th class="p-3">Product</th><th class="p-3 text-right">Stock</th><th class="p-3 text-right">Cost Value</th></tr>
+                        </thead>
+                        <tbody id="stockValueTableBody" class="divide-y divide-gray-200"></tbody>
+                    </table>
+                </div>
             </div>
         </div>
+
+        <div id="reportsTab" class="container mx-auto px-4 pb-8 tab-content hidden">
+            <div class="glass p-6 rounded-xl border border-gray-200">
+                <h2 class="text-2xl font-bold mb-6 text-gray-800">Generate Reports</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+                        <input type="date" id="reportStartDate" class="w-full border p-2 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">End Date</label>
+                        <input type="date" id="reportEndDate" class="w-full border p-2 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                </div>
+                <div class="flex flex-col gap-3">
+                    <button onclick="generateFinancialReport()" class="bg-blue-600 text-white py-3 px-6 rounded-lg font-bold hover:bg-blue-700 transition flex items-center justify-center gap-2">
+                        <span>📄</span> Download Financial Summary
+                    </button>
+                    <button onclick="generateAuditReport()" class="bg-gray-800 text-white py-3 px-6 rounded-lg font-bold hover:bg-gray-900 transition flex items-center justify-center gap-2">
+                        <span>📊</span> Download Detailed Audit Report
+                    </button>
+                </div>
+            </div>
+        </div>
+
     </div>
+
+    <footer class="text-center py-6 text-gray-500 text-sm mt-auto bg-white border-t border-gray-200">
+        Powered by <span class="font-semibold text-blue-600">The Kina Solutions</span>
+    </footer>
 
 </div>
 
@@ -287,9 +348,8 @@
     
     function checkPin() {
         if(inputPin===pin) { 
-            // FIXED: Using explicit style.display
             document.getElementById("loginScreen").style.display = "none";
-            document.getElementById("mainSystem").style.display = "block";
+            document.getElementById("mainSystem").style.display = "flex";
             showTab('products'); 
         } else { 
             document.getElementById("errorMsg").classList.remove("hidden"); 
@@ -306,6 +366,72 @@
         document.getElementById("loginScreen").style.display = "flex";
         inputPin = "";
         updateDots();
+    }
+
+    /* --- ADMIN ACTION PIN MODAL LOGIC --- */
+    let adminPin = "";
+    let pendingAction = null; 
+    let pendingTargetId = null;
+
+    function openAdminModal(action, id) {
+        pendingAction = action;
+        pendingTargetId = id;
+        adminPin = "";
+        updateAdminDots();
+        document.getElementById("adminActionText").innerText = action === 'edit' ? "Enter PIN to Edit Product" : "Enter PIN to Delete Product";
+        document.getElementById("adminPinModal").classList.remove("hidden");
+        document.getElementById("adminPinModal").classList.add("flex");
+    }
+
+    function closeAdminModal() {
+        document.getElementById("adminPinModal").classList.add("hidden");
+        document.getElementById("adminPinModal").classList.remove("flex");
+        adminPin = "";
+        pendingAction = null;
+        pendingTargetId = null;
+    }
+
+    function updateAdminDots() {
+        for(let i=1;i<=4;i++) {
+            const dot = document.getElementById("adot"+i);
+            if(i <= adminPin.length) {
+                dot.classList.remove("bg-gray-300");
+                dot.classList.add("bg-blue-600");
+            } else {
+                dot.classList.remove("bg-blue-600");
+                dot.classList.add("bg-gray-300");
+            }
+        }
+    }
+
+    function pressAdminKey(n) {
+        if(adminPin.length < 4) {
+            adminPin += n;
+            updateAdminDots();
+            if(adminPin.length === 4) checkAdminPin();
+        }
+    }
+
+    function deleteAdminKey() {
+        adminPin = adminPin.slice(0, -1);
+        updateAdminDots();
+    }
+
+    function checkAdminPin() {
+        if(adminPin === pin) {
+            const action = pendingAction;
+            const target = pendingTargetId;
+            // IMPORTANT: Perform the action BEFORE closing/resetting
+            if(action === 'edit') editProductReal(target);
+            if(action === 'delete') deleteProductReal(target);
+            
+            // Then close the modal
+            closeAdminModal();
+        } else {
+            alert("Incorrect PIN!");
+            adminPin = "";
+            updateAdminDots();
+        }
     }
 
     /* --- FIREBASE SETUP --- */
@@ -327,16 +453,15 @@
 
     function initializeDatabaseListeners() {
         database.ref('products').on('value', s => { products = s.val() ? Object.values(s.val()) : []; updateUI(); });
-        database.ref('distributions').limitToLast(200).on('value', s => { distributions = s.val() ? Object.values(s.val()).sort((a,b)=>new Date(a.date)-new Date(b.date)) : []; if(currentTab==='distribution') updateUI(); });
-        database.ref('restocks').limitToLast(200).on('value', s => { restocks = s.val() ? Object.values(s.val()).sort((a,b)=>new Date(a.date)-new Date(b.date)) : []; if(currentTab==='restock') updateUI(); });
-        database.ref('returns').limitToLast(200).on('value', s => { returns = s.val() ? Object.values(s.val()).sort((a,b)=>new Date(a.date)-new Date(b.date)) : []; if(currentTab==='returns') updateUI(); });
+        database.ref('distributions').limitToLast(200).on('value', s => { distributions = s.val() ? Object.values(s.val()).sort((a,b)=>new Date(a.date)-new Date(b.date)) : []; if(currentTab==='distribution' || currentTab==='ledger') updateUI(); });
+        database.ref('restocks').limitToLast(200).on('value', s => { restocks = s.val() ? Object.values(s.val()).sort((a,b)=>new Date(a.date)-new Date(b.date)) : []; if(currentTab==='restock' || currentTab==='ledger') updateUI(); });
+        database.ref('returns').limitToLast(200).on('value', s => { returns = s.val() ? Object.values(s.val()).sort((a,b)=>new Date(a.date)-new Date(b.date)) : []; if(currentTab==='returns' || currentTab==='ledger') updateUI(); });
     }
 
     function showTab(tab) {
         currentTab = tab;
         document.querySelectorAll('.tab-content').forEach(e=>e.classList.add('hidden'));
         document.querySelectorAll('.tab-btn').forEach(e=>{e.classList.remove('bg-blue-600','text-white'); e.classList.add('text-gray-600','hover:bg-gray-100');});
-        
         document.getElementById(tab+'Tab').classList.remove('hidden');
         document.querySelector(`[data-tab="${tab}"]`).classList.remove('text-gray-600','hover:bg-gray-100');
         document.querySelector(`[data-tab="${tab}"]`).classList.add('bg-blue-600','text-white');
@@ -344,12 +469,6 @@
     }
 
     // --- Product Functions ---
-    function verifyAdmin() {
-        const entered = prompt("Enter PIN to Edit/Delete:");
-        if(entered === pin) return true;
-        alert("Incorrect PIN!"); return false;
-    }
-
     function saveProduct() {
         const id = document.getElementById('editingProductId').value || Date.now();
         const name = document.getElementById('prodName').value;
@@ -364,9 +483,13 @@
         writeData(`products/${data.id}`, data);
         cancelEdit();
     }
-    function editProduct(id) {
-        if(!verifyAdmin()) return;
+
+    function editProduct(id) { openAdminModal('edit', id); }
+    function deleteProduct(id) { openAdminModal('delete', id); }
+
+    function editProductReal(id) {
         const p = products.find(x=>x.id===id);
+        if(!p) return; // Safety check
         document.getElementById('editingProductId').value=p.id;
         document.getElementById('prodName').value=p.name;
         document.getElementById('prodBuyPrice').value=p.buyPrice;
@@ -377,6 +500,7 @@
         document.getElementById('cancelEditBtn').classList.remove('hidden');
         document.getElementById('productsTab').scrollIntoView({behavior:'smooth'});
     }
+
     function cancelEdit() {
         document.getElementById('editingProductId').value='';
         document.getElementById('prodName').value=''; document.getElementById('prodStock').value='';
@@ -385,9 +509,11 @@
         document.getElementById('saveProductBtn').innerText="Add";
         document.getElementById('cancelEditBtn').classList.add('hidden');
     }
-    function deleteProduct(id) { 
-        if(!verifyAdmin()) return;
-        if(confirm("Delete this product?")) writeData(`products/${id}`, null); 
+
+    function deleteProductReal(id) {
+        if(confirm("Are you sure you want to permanently delete this product?")) {
+            writeData(`products/${id}`, null); 
+        }
     }
 
     // --- Transaction Functions ---
@@ -474,6 +600,32 @@
         document.getElementById(t+'ProductDropdown').classList.add('hidden');
     }
 
+    // --- Ledger Filters ---
+    function initLedgerDates() {
+        const today = new Date();
+        const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+        const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0); 
+        
+        const formatDate = (d) => {
+            let month = '' + (d.getMonth() + 1), day = '' + d.getDate(), year = d.getFullYear();
+            if (month.length < 2) month = '0' + month;
+            if (day.length < 2) day = '0' + day;
+            return [year, month, day].join('-');
+        };
+        
+        document.getElementById('ledgerStart').value = formatDate(firstDay);
+        document.getElementById('ledgerEnd').value = formatDate(lastDay);
+    }
+
+    function filterLedger() {
+        updateUI();
+    }
+
+    function resetLedgerDates() {
+        initLedgerDates();
+        updateUI();
+    }
+
     // --- Updates ---
     function updateUI() {
         if(currentTab==='products') {
@@ -495,11 +647,21 @@
             tbody.innerHTML = returns.slice().reverse().map(r=>`<tr class="hover:bg-gray-50 border-b"><td class="p-3 text-gray-600">${new Date(r.date).toLocaleDateString()}</td><td class="p-3 font-medium">${r.productName}</td><td class="p-3 text-gray-600">${r.shop}</td><td class="p-3"><span class="px-2 py-1 rounded text-xs font-bold ${r.reason==='Damaged'?'bg-red-100 text-red-800':'bg-yellow-100 text-yellow-800'}">${r.reason}</span> ${r.addedToStock?'<span class="text-green-600 font-bold text-xs ml-1">(+Stock)</span>':''}</td><td class="p-3 text-right font-bold">${r.qty}</td><td class="p-3 text-right text-red-500 font-medium">-${r.value.toFixed(2)}</td></tr>`).join('');
         }
         if(currentTab==='ledger') {
-            const inc = distributions.reduce((a,b)=>a+b.value,0);
-            const exp = restocks.reduce((a,b)=>a+b.cost,0);
-            const retVal = returns.reduce((a,b)=>a+b.value,0);
-            const stv = products.reduce((a,b)=>a+(b.buyPrice*b.stock),0);
+            const sDate = new Date(document.getElementById('ledgerStart').value);
+            const eDate = new Date(document.getElementById('ledgerEnd').value);
+            eDate.setHours(23,59,59,999); 
+
+            // Filter data based on selected range
+            const fDist = distributions.filter(d => { const dDate = new Date(d.date); return dDate >= sDate && dDate <= eDate; });
+            const fRest = restocks.filter(r => { const rDate = new Date(r.date); return rDate >= sDate && rDate <= eDate; });
+            const fRet = returns.filter(r => { const rDate = new Date(r.date); return rDate >= sDate && rDate <= eDate; });
+
+            const inc = fDist.reduce((a,b)=>a+b.value,0);
+            const exp = fRest.reduce((a,b)=>a+b.cost,0);
+            const retVal = fRet.reduce((a,b)=>a+b.value,0);
             const net = inc - exp - retVal;
+            
+            const stv = products.reduce((a,b)=>a+(b.buyPrice*b.stock),0);
             
             document.getElementById('totalIncome').innerText = "Rs. "+inc.toFixed(2);
             document.getElementById('totalExpenses').innerText = "Rs. "+exp.toFixed(2);
@@ -517,6 +679,7 @@
         });
     }
 
+    // --- Reports ---
     function generateFinancialReport() {
         const s = new Date(document.getElementById('reportStartDate').value);
         const e = new Date(document.getElementById('reportEndDate').value); e.setHours(23,59,59);
@@ -583,8 +746,13 @@
         doc.save("detailed_audit_report.pdf");
     }
 
+    // Init
     const d = new Date(); document.getElementById('reportEndDate').valueAsDate = d;
     d.setDate(d.getDate()-30); document.getElementById('reportStartDate').valueAsDate = d;
+    
+    // Set Ledger Defaults (Current Month)
+    initLedgerDates();
+
     updateDots();
     initializeDatabaseListeners();
 </script>
