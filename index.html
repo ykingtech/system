@@ -1,3 +1,5 @@
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -18,7 +20,8 @@
         body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
         .glass { background: #ffffff; border: 1px solid #e5e7eb; }
         .shadow-custom { box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        input:focus, select:focus, textarea:focus { outline: none; ring: 2px; ring-color: #3b82f6; }
+        /* Fixed: Use standard box-shadow for focus ring instead of invalid 'ring' property */
+        input:focus, select:focus, textarea:focus { outline: none; box-shadow: 0 0 0 2px #3b82f6; border-color: #3b82f6; }
         .key:active { background: #2563eb; color: white; transform: scale(0.95); }
         /* Scrollbar Styling */
         ::-webkit-scrollbar { width: 8px; height: 8px; }
@@ -369,7 +372,23 @@
     function updateDots() { for(let i=1;i<=4;i++) document.getElementById("dot"+i).className = i<=inputPin.length ? "w-5 h-5 rounded-full bg-blue-600" : "w-5 h-5 rounded-full bg-gray-300"; }
     function pressKey(n) { if(inputPin.length<4) { inputPin+=n; updateDots(); if(inputPin.length===4) checkPin(); } }
     function deleteKey() { inputPin=inputPin.slice(0,-1); document.getElementById("errorMsg").classList.add("hidden"); updateDots(); }
-    function checkPin() { if(inputPin===pin) { document.getElementById("loginScreen").style.display="none"; document.getElementById("mainSystem").style.display="flex"; showTab('products'); } else { document.getElementById("errorMsg").classList.remove("hidden"); inputPin=""; setTimeout(()=>{document.getElementById("errorMsg").classList.add("hidden"); updateDots();},1000); } }
+    
+    function checkPin() { 
+        if(inputPin===pin) { 
+            document.getElementById("loginScreen").style.display="none"; 
+            document.getElementById("mainSystem").style.display="flex"; 
+            showTab('products'); 
+        } else { 
+            document.getElementById("errorMsg").classList.remove("hidden"); 
+            inputPin=""; 
+            // Fixed: Clear visual dots immediately to avoid confusion
+            updateDots();
+            setTimeout(()=>{
+                document.getElementById("errorMsg").classList.add("hidden"); 
+            },1000); 
+        } 
+    }
+    
     function logout() { document.getElementById("mainSystem").style.display="none"; document.getElementById("loginScreen").style.display="flex"; inputPin=""; updateDots(); }
 
     // Admin Modal Logic
@@ -525,7 +544,8 @@
     
     function filterProducts(t) {
         const val = document.getElementById(t+'ProductSearch').value.toLowerCase();
-        const list = products.filter(p=>p.name.toLowerCase().includes(val));
+        // Fixed: Added slice(0,50) to prevent browser freeze when deleting text (which would try to render ALL products)
+        const list = products.filter(p=>p.name.toLowerCase().includes(val)).slice(0, 50);
         const div = document.getElementById(t+'ProductDropdown');
         div.innerHTML = list.length ? list.map(p=>`<div class="p-2 hover:bg-blue-50 cursor-pointer border-b" onclick="selectProduct('${t}',${p.id},'${p.name.replace(/'/g,"\\'")}')">${p.name} (${p.stock})</div>`).join('') : '<div class="p-2 text-gray-500">No items</div>';
     }
@@ -553,19 +573,20 @@
         if(currentTab==='products') {
             const tbody = document.getElementById('productsTableBody');
             const search = document.getElementById('productListSearch').value.toLowerCase();
-            tbody.innerHTML = products.filter(p=>p.name.toLowerCase().includes(search)).map(p=>`<tr class="hover:bg-gray-50 border-b"><td class="p-3 font-medium">${p.name}</td><td class="p-3 text-right">${p.buyPrice}</td><td class="p-3 text-right">${p.sellPrice}</td><td class="p-3 text-right font-bold">${p.stock}</td><td class="p-3 text-right">${(p.buyPrice*p.stock).toFixed(2)}</td><td class="p-3 text-center"><button onclick="editProduct(${p.id})" class="text-blue-600 mr-2">Edit</button><button onclick="deleteProduct(${p.id})" class="text-red-500">Del</button></td></tr>`).join('');
+            // Fixed: Added slice(0,50) to limit initial render rows to prevent freeze
+            tbody.innerHTML = products.filter(p=>p.name.toLowerCase().includes(search)).slice(0, 50).map(p=>`<tr class="hover:bg-gray-50 border-b"><td class="p-3 font-medium">${p.name}</td><td class="p-3 text-right">${p.buyPrice}</td><td class="p-3 text-right">${p.sellPrice}</td><td class="p-3 text-right font-bold">${p.stock}</td><td class="p-3 text-right">${(p.buyPrice*p.stock).toFixed(2)}</td><td class="p-3 text-center"><button onclick="editProduct(${p.id})" class="text-blue-600 mr-2">Edit</button><button onclick="deleteProduct(${p.id})" class="text-red-500">Del</button></td></tr>`).join('');
         }
         if(currentTab==='distribution') {
             const tbody = document.getElementById('distributionTableBody');
-            tbody.innerHTML = distributions.slice().reverse().map(d=>`<tr class="hover:bg-gray-50 border-b"><td class="p-3">${new Date(d.date).toLocaleDateString()}</td><td class="p-3 font-medium">${d.productName}</td><td class="p-3 text-gray-500">${d.shop}</td><td class="p-3 text-right">${d.qty}</td><td class="p-3 text-right text-orange-600">${d.freeQty||0}</td><td class="p-3 text-right text-xs text-gray-400">${d.sellPrice}</td><td class="p-3 text-right font-bold text-green-600">${d.value.toFixed(2)}</td></tr>`).join('');
+            tbody.innerHTML = distributions.slice().reverse().map(d=>`<tr class="hover:bg-gray-50 border-b"><td class="p-3">${new Date(d.date).toLocaleDateString()}</td><td class="p-3 font-medium">${d.productName}</td><td class="p-3 text-gray-500">${d.shop}</td><td class="p-3 text-right">${d.qty}</td><td class="p-3 text-right text-orange-600">${d.freeQty||0}</td><td class="p-3 text-right text-xs text-gray-400">${d.sellPrice}</td><td class="p-3 text-right font-bold text-green-600">${(d.value||0).toFixed(2)}</td></tr>`).join('');
         }
         if(currentTab==='restock') {
             const tbody = document.getElementById('restockTableBody');
-            tbody.innerHTML = restocks.slice().reverse().map(r=>`<tr class="hover:bg-gray-50 border-b"><td class="p-3">${new Date(r.date).toLocaleDateString()}</td><td class="p-3 font-medium">${r.productName}</td><td class="p-3 text-right font-bold">${r.qty}</td><td class="p-3 text-right text-red-600">${r.cost.toFixed(2)}</td></tr>`).join('');
+            tbody.innerHTML = restocks.slice().reverse().map(r=>`<tr class="hover:bg-gray-50 border-b"><td class="p-3">${new Date(r.date).toLocaleDateString()}</td><td class="p-3 font-medium">${r.productName}</td><td class="p-3 text-right font-bold">${r.qty}</td><td class="p-3 text-right text-red-600">${(r.cost||0).toFixed(2)}</td></tr>`).join('');
         }
         if(currentTab==='returns') {
             const tbody = document.getElementById('returnsTableBody');
-            tbody.innerHTML = returns.slice().reverse().map(r=>`<tr class="hover:bg-gray-50 border-b"><td class="p-3">${new Date(r.date).toLocaleDateString()}</td><td class="p-3 font-medium">${r.productName}</td><td class="p-3 text-gray-500">${r.shop}</td><td class="p-3 text-xs">${r.reason}</td><td class="p-3 text-right font-bold">${r.qty}</td><td class="p-3 text-right text-orange-600 font-bold">${r.freeQty||0}</td><td class="p-3 text-right text-red-500">-${r.value.toFixed(2)}</td></tr>`).join('');
+            tbody.innerHTML = returns.slice().reverse().map(r=>`<tr class="hover:bg-gray-50 border-b"><td class="p-3">${new Date(r.date).toLocaleDateString()}</td><td class="p-3 font-medium">${r.productName}</td><td class="p-3 text-gray-500">${r.shop}</td><td class="p-3 text-xs">${r.reason}</td><td class="p-3 text-right font-bold">${r.qty}</td><td class="p-3 text-right text-orange-600 font-bold">${r.freeQty||0}</td><td class="p-3 text-right text-red-500">-${(r.value||0).toFixed(2)}</td></tr>`).join('');
         }
         if(currentTab==='ledger') {
             const s = new Date(document.getElementById('ledgerStart').value), e = new Date(document.getElementById('ledgerEnd').value); e.setHours(23,59,59);
@@ -573,9 +594,9 @@
             const fr = restocks.filter(r=>new Date(r.date)>=s && new Date(r.date)<=e);
             const fre = returns.filter(r=>new Date(r.date)>=s && new Date(r.date)<=e);
             
-            const inc = fd.reduce((a,b)=>a+b.value,0);
-            const exp = fr.reduce((a,b)=>a+b.cost,0);
-            const ret = fre.reduce((a,b)=>a+b.value,0);
+            const inc = fd.reduce((a,b)=>a+(b.value||0),0);
+            const exp = fr.reduce((a,b)=>a+(b.cost||0),0);
+            const ret = fre.reduce((a,b)=>a+(b.value||0),0);
             
             document.getElementById('totalIncome').innerText = "Rs. "+inc.toFixed(2);
             document.getElementById('totalExpenses').innerText = "Rs. "+exp.toFixed(2);
@@ -606,9 +627,9 @@
         doc.setFontSize(16); doc.text("Distribution Agency Financial Report", 105, 15, {align:"center"});
         doc.setFontSize(10); doc.text(`Period: ${s} - ${e}`, 105, 22, {align:"center"});
         
-        const inc = fd.reduce((a,b)=>a+b.value,0);
-        const exp = fr.reduce((a,b)=>a+b.cost,0);
-        const ret = fre.reduce((a,b)=>a+b.value,0);
+        const inc = fd.reduce((a,b)=>a+(b.value||0),0);
+        const exp = fr.reduce((a,b)=>a+(b.cost||0),0);
+        const ret = fre.reduce((a,b)=>a+(b.value||0),0);
         const stv = products.reduce((a,b)=>a+(b.buyPrice*b.stock),0);
         
         // 1. Summary
@@ -634,7 +655,7 @@
         doc.autoTable({
             startY:y+5,
             head:[['Date','Product','Shop','Qty','Free','Val']],
-            body:fd.map(d=>[new Date(d.date).toLocaleDateString(),d.productName,d.shop,d.qty,d.freeQty,d.value.toFixed(2)]),
+            body:fd.map(d=>[new Date(d.date).toLocaleDateString(),d.productName,d.shop,d.qty,d.freeQty,(d.value||0).toFixed(2)]),
             theme: 'grid',
             styles: { textColor: 0, lineColor: 0, lineWidth: 0.1 },
             headStyles: { fillColor: 255, textColor: 0, fontStyle: 'bold' }
@@ -647,7 +668,7 @@
         doc.autoTable({
             startY:y+5,
             head:[['Date','Product','Shop','Reason','Sold Ret','Free Ret','Val']],
-            body:fre.map(r=>[new Date(r.date).toLocaleDateString(),r.productName,r.shop,r.reason,r.qty,r.freeQty||0,r.value.toFixed(2)]),
+            body:fre.map(r=>[new Date(r.date).toLocaleDateString(),r.productName,r.shop,r.reason,r.qty,r.freeQty||0,(r.value||0).toFixed(2)]),
             theme: 'grid',
             styles: { textColor: 0, lineColor: 0, lineWidth: 0.1 },
             headStyles: { fillColor: 255, textColor: 0, fontStyle: 'bold' }
@@ -660,7 +681,7 @@
         doc.autoTable({
             startY:y+5,
             head:[['Date','Product','Qty','Cost']],
-            body:fr.map(r=>[new Date(r.date).toLocaleDateString(),r.productName,r.qty,r.cost.toFixed(2)]),
+            body:fr.map(r=>[new Date(r.date).toLocaleDateString(),r.productName,r.qty,(r.cost||0).toFixed(2)]),
             theme: 'grid',
             styles: { textColor: 0, lineColor: 0, lineWidth: 0.1 },
             headStyles: { fillColor: 255, textColor: 0, fontStyle: 'bold' }
@@ -705,11 +726,11 @@
         
         y = doc.lastAutoTable.finalY + 10;
         doc.text("2. Sales Transactions", 14, y);
-        const saleTot = fd.reduce((a,b)=>a+b.value,0);
+        const saleTot = fd.reduce((a,b)=>a+(b.value||0),0);
         doc.autoTable({
             startY:y+5, 
             head:[['Date','Item','Shop','Qty','Free','Value']], 
-            body:[...fd.map(d=>[new Date(d.date).toLocaleDateString(),d.productName,d.shop,d.qty,d.freeQty,d.value.toFixed(2)]),['','','','','Total:',saleTot.toFixed(2)]],
+            body:[...fd.map(d=>[new Date(d.date).toLocaleDateString(),d.productName,d.shop,d.qty,d.freeQty,(d.value||0).toFixed(2)]),['','','','','Total:',saleTot.toFixed(2)]],
             theme: 'grid',
             styles: { textColor: 0, lineColor: 0, lineWidth: 0.1 },
             headStyles: { fillColor: 255, textColor: 0, fontStyle: 'bold' }
@@ -718,11 +739,11 @@
         y = doc.lastAutoTable.finalY + 10;
         if(y>180){doc.addPage();y=20;}
         doc.text("3. Returns (Deductions)", 14, y);
-        const retTot = fre.reduce((a,b)=>a+b.value,0);
+        const retTot = fre.reduce((a,b)=>a+(b.value||0),0);
         doc.autoTable({
             startY:y+5, 
             head:[['Date','Item','Shop','Reason','Stock Added?','Qty','Value']], 
-            body:[...fre.map(r=>[new Date(r.date).toLocaleDateString(),r.productName,r.shop,r.reason,r.addedToStock?'Yes':'No',r.qty,r.value.toFixed(2)]),['','','','','','Total:',retTot.toFixed(2)]],
+            body:[...fre.map(r=>[new Date(r.date).toLocaleDateString(),r.productName,r.shop,r.reason,r.addedToStock?'Yes':'No',r.qty,(r.value||0).toFixed(2)]),['','','','','','Total:',retTot.toFixed(2)]],
             theme: 'grid',
             styles: { textColor: 0, lineColor: 0, lineWidth: 0.1 },
             headStyles: { fillColor: 255, textColor: 0, fontStyle: 'bold' }
@@ -749,4 +770,3 @@
 </script>
 </body>
 </html>
-
