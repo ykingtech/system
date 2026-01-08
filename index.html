@@ -365,6 +365,30 @@
                     </div>
                 </div>
             </div>
+
+            <div class="glass p-6 rounded-xl border border-gray-200 mt-6">
+                <h2 class="text-2xl font-bold mb-4 text-gray-800">Product History Report</h2>
+                <div class="flex flex-col md:flex-row gap-4 mb-4">
+                    <div class="relative flex-grow">
+                        <input type="hidden" id="reportProdProduct">
+                        <input type="text" id="reportProdProductSearch" placeholder="Search Product for History..." class="w-full px-4 py-2 border rounded-lg focus:border-blue-500" onfocus="showDropdown('reportProd')" onblur="hideDropdown('reportProd', event)" onkeyup="debouncedFilter('reportProd')" autocomplete="off">
+                        <div id="reportProdProductDropdown" class="absolute z-50 w-full mt-1 bg-white border rounded-lg shadow-xl max-h-60 overflow-y-auto hidden"></div>
+                    </div>
+                    <button onclick="generateProductHistory()" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-blue-700 transition">View History</button>
+                </div>
+                
+                <div class="overflow-x-auto rounded-lg border">
+                    <table class="w-full text-sm text-left text-gray-700">
+                        <thead class="bg-gray-800 text-white uppercase">
+                            <tr><th>Date</th><th>Type</th><th>Details (Shop/Reason)</th><th class="text-right">Qty</th><th class="text-right">Free</th><th class="text-right">Value Impact</th></tr>
+                        </thead>
+                        <tbody id="productHistoryBody">
+                            <tr><td colspan="6" class="p-4 text-center text-gray-400">Select a product and click View History</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
         </div>
 
     </div>
@@ -646,6 +670,8 @@
         document.getElementById(t+'ProductSearch').value = name;
         document.getElementById(t+'ProductDropdown').classList.add('hidden');
         
+        if(t === 'reportProd') return; // Just select, no extra autofill
+
         const p = products.find(x=>x.id===id);
         
         if(t === 'dist') {
@@ -864,6 +890,54 @@
         } else { 
             doc.save("detailed_audit_report.pdf"); 
         }
+    }
+
+    // --- NEW FUNCTION: PRODUCT HISTORY REPORT ---
+    function generateProductHistory() {
+        const name = document.getElementById('reportProdProductSearch').value;
+        const s = document.getElementById('reportStartDate').value;
+        const e = document.getElementById('reportEndDate').value;
+        
+        if(!name || !s || !e) return alert("Select Product and Date Range");
+        
+        const sd = new Date(s);
+        const ed = new Date(e); ed.setHours(23,59,59);
+        
+        // Filter arrays for this product name within dates
+        const sales = distributions.filter(d => d.productName === name && new Date(d.date) >= sd && new Date(d.date) <= ed)
+            .map(d => ({ date: d.date, type: 'SALE', desc: d.shop, qty: d.qty, free: d.freeQty, val: (d.value || 0) }));
+            
+        const rest = restocks.filter(r => r.productName === name && new Date(r.date) >= sd && new Date(r.date) <= ed)
+            .map(r => ({ date: r.date, type: 'RESTOCK', desc: 'Restock Entry', qty: r.qty, free: 0, val: -(r.cost || 0) })); 
+            
+        const rets = returns.filter(r => r.productName === name && new Date(r.date) >= sd && new Date(r.date) <= ed)
+            .map(r => ({ date: r.date, type: 'RETURN', desc: r.shop + ' (' + r.reason + ')', qty: r.qty, free: r.freeQty, val: -(r.value || 0) }));
+            
+        // Combine all events and Sort by date
+        const all = [...sales, ...rest, ...rets].sort((a,b) => new Date(a.date) - new Date(b.date));
+        
+        const tbody = document.getElementById('productHistoryBody');
+        
+        if(all.length === 0) { 
+            tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-gray-500">No history found for this product in selected period.</td></tr>'; 
+            return; 
+        }
+        
+        tbody.innerHTML = all.map(i => {
+            let color = 'text-gray-700';
+            if(i.type === 'SALE') color = 'text-green-600';
+            if(i.type === 'RESTOCK') color = 'text-purple-600';
+            if(i.type === 'RETURN') color = 'text-orange-600';
+            
+            return `<tr class="border-b hover:bg-gray-50">
+                <td class="p-3 text-xs md:text-sm">${new Date(i.date).toLocaleDateString()} ${new Date(i.date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</td>
+                <td class="p-3 font-bold ${color} text-xs md:text-sm">${i.type}</td>
+                <td class="p-3 text-sm">${i.desc}</td>
+                <td class="p-3 text-right font-medium">${i.qty}</td>
+                <td class="p-3 text-right text-gray-500">${i.free || '-'}</td>
+                <td class="p-3 text-right font-bold text-gray-800">Rs. ${Math.abs(i.val).toFixed(2)}</td>
+            </tr>`;
+        }).join('');
     }
 
     // --- LEDGER DATE FUNCTIONS ---
