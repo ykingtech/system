@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <title>CNV Distribution System (Stable)</title>
+    <title>CNV Distribution System (Stable v2.2)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
@@ -92,7 +92,7 @@
             <div class="flex items-center space-x-3">
                 <div class="bg-blue-600 w-10 h-10 rounded-lg flex items-center justify-center text-white font-bold text-xl">C</div>
                 <div>
-                    <h1 class="text-xl font-bold text-gray-800">Distribution System v2</h1>
+                    <h1 class="text-xl font-bold text-gray-800">Distribution System v2.2</h1>
                     <div class="flex items-center gap-2 mt-1">
                         <div id="connDot" class="status-dot status-offline"></div>
                         <span id="connText" class="text-xs text-gray-500 font-medium">Initializing...</span>
@@ -134,7 +134,7 @@
             <div class="glass rounded-xl shadow-custom p-6">
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="text-xl font-bold text-gray-800">Stock List <span id="itemCount" class="text-sm text-gray-500 font-normal"></span></h2>
-                    <input type="text" id="productListSearch" placeholder="Search..." class="px-4 py-2 border rounded-lg focus:border-blue-500" onkeyup="updateUI()">
+                    <input type="text" id="productListSearch" placeholder="Search..." class="px-4 py-2 border rounded-lg focus:border-blue-500" onkeyup="debouncedUpdateUI()">
                 </div>
                 <div class="overflow-x-auto rounded-lg border">
                     <table class="w-full text-sm text-left text-gray-700">
@@ -142,7 +142,7 @@
                             <tr><th class="px-4 py-3">Name</th><th class="px-4 py-3 text-right">Buy</th><th class="px-4 py-3 text-right">Sell</th><th class="px-4 py-3 text-right">Stock</th><th class="px-4 py-3 text-center">Action</th></tr>
                         </thead>
                         <tbody id="productsTableBody" class="divide-y divide-gray-200">
-                            <tr><td colspan="5" class="p-4 text-center text-gray-400">Connecting to database...</td></tr>
+                            <tr><td colspan="5" class="p-4 text-center text-gray-400">Loading...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -155,7 +155,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     <div class="relative lg:col-span-2">
                         <select id="distProduct" class="hidden"><option value="">Select</option></select>
-                        <input type="text" id="distProductSearch" placeholder="Search Product..." class="w-full px-4 py-2 border rounded-lg focus:border-blue-500" onfocus="showDropdown('dist')" onblur="hideDropdown('dist', event)" onkeyup="filterProducts('dist')" autocomplete="off">
+                        <input type="text" id="distProductSearch" placeholder="Search Product..." class="w-full px-4 py-2 border rounded-lg focus:border-blue-500" onfocus="showDropdown('dist')" onblur="hideDropdown('dist', event)" onkeyup="debouncedFilter('dist')" autocomplete="off">
                         <div id="distProductDropdown" class="absolute z-50 w-full mt-1 bg-white border rounded-lg shadow-xl max-h-60 overflow-y-auto hidden"></div>
                     </div>
                     <input type="text" id="distShop" placeholder="Shop Name" class="px-4 py-2 border rounded-lg focus:border-blue-500" autocomplete="off">
@@ -196,7 +196,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
                     <div class="relative lg:col-span-2">
                         <select id="retProduct" class="hidden"><option value="">Select</option></select>
-                        <input type="text" id="retProductSearch" placeholder="Search Product..." class="w-full px-4 py-2 border rounded-lg focus:border-blue-500" onfocus="showDropdown('ret')" onblur="hideDropdown('ret', event)" onkeyup="filterProducts('ret')" autocomplete="off">
+                        <input type="text" id="retProductSearch" placeholder="Search Product..." class="w-full px-4 py-2 border rounded-lg focus:border-blue-500" onfocus="showDropdown('ret')" onblur="hideDropdown('ret', event)" onkeyup="debouncedFilter('ret')" autocomplete="off">
                         <div id="retProductDropdown" class="absolute z-50 w-full mt-1 bg-white border rounded-lg shadow-xl max-h-60 overflow-y-auto hidden"></div>
                     </div>
                     <input type="text" id="retShop" placeholder="Shop Name" class="px-4 py-2 border rounded-lg focus:border-blue-500" autocomplete="off">
@@ -248,16 +248,19 @@
         <div id="restockTab" class="container mx-auto px-4 pb-8 tab-content hidden">
             <div class="glass rounded-xl shadow-custom p-6 mb-6">
                 <h2 class="text-2xl font-bold text-gray-800 mb-6">Restock Inventory</h2>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div class="relative">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                    <div class="relative lg:col-span-2">
                         <select id="restockProduct" class="hidden"><option value="">Select</option></select>
-                        <input type="text" id="restockProductSearch" placeholder="Search Product..." class="w-full px-4 py-2 border rounded-lg focus:border-blue-500" onfocus="showDropdown('restock')" onblur="hideDropdown('restock', event)" onkeyup="filterProducts('restock')" autocomplete="off">
+                        <input type="text" id="restockProductSearch" placeholder="Search Product..." class="w-full px-4 py-2 border rounded-lg focus:border-blue-500" onfocus="showDropdown('restock')" onblur="hideDropdown('restock', event)" onkeyup="debouncedFilter('restock')" autocomplete="off">
                         <div id="restockProductDropdown" class="absolute z-50 w-full mt-1 bg-white border rounded-lg shadow-xl max-h-60 overflow-y-auto hidden"></div>
                     </div>
                     
+                    <input type="text" inputmode="decimal" id="restockCost" placeholder="Unit Cost (Buy)" class="px-4 py-2 border rounded-lg focus:border-blue-500" oninput="validateNum(this)">
+                    <input type="text" inputmode="decimal" id="restockSellPrice" placeholder="Selling Price" class="px-4 py-2 border rounded-lg focus:border-blue-500" oninput="validateNum(this)">
+                    
                     <input type="text" inputmode="decimal" id="restockQty" placeholder="Quantity" class="px-4 py-2 border rounded-lg focus:border-blue-500" oninput="validateNum(this)">
                     
-                    <button onclick="addRestock()" class="bg-purple-600 text-white py-2 rounded-lg font-bold hover:bg-purple-700 transition">Restock</button>
+                    <button onclick="addRestock()" class="bg-purple-600 text-white py-2 rounded-lg font-bold lg:col-span-5 hover:bg-purple-700 transition mt-2">Restock & Update</button>
                 </div>
             </div>
             <div class="glass rounded-xl shadow-custom p-6">
@@ -382,7 +385,13 @@
         if(inputPin===pin) { document.getElementById("loginScreen").style.display="none"; document.getElementById("mainSystem").style.display="flex"; showTab('products'); } 
         else { document.getElementById("errorMsg").classList.remove("hidden"); inputPin=""; updateDots(); setTimeout(()=>{ document.getElementById("errorMsg").classList.add("hidden"); },1000); } 
     }
-    function logout() { document.getElementById("mainSystem").style.display="none"; document.getElementById("loginScreen").style.display="flex"; inputPin=""; updateDots(); }
+    
+    // --- MEMORY CLEANUP ON LOGOUT ---
+    function logout() { 
+        document.getElementById("mainSystem").style.display="none"; 
+        document.getElementById("loginScreen").style.display="flex"; 
+        inputPin=""; updateDots(); 
+    }
 
     let adminPin = "", pendingAction = null, pendingTargetId = null;
     function openAdminModal(a,i) { pendingAction=a; pendingTargetId=i; adminPin=""; updateAdminDots(); document.getElementById("adminPinModal").classList.remove("hidden"); document.getElementById("adminPinModal").classList.add("flex"); }
@@ -392,12 +401,21 @@
     function deleteAdminKey() { adminPin=adminPin.slice(0,-1); updateAdminDots(); }
     function checkAdminPin() { if(adminPin===pin) { closeAdminModal(); if(pendingAction==='edit') editProductReal(pendingTargetId); if(pendingAction==='delete') deleteProductReal(pendingTargetId); } else { alert("Incorrect PIN!"); adminPin=""; updateAdminDots(); } }
 
-    // --- HELPER FOR INPUTS ---
+    // --- HELPER FOR INPUTS (LIGHTWEIGHT) ---
     function validateNum(el) {
         el.value = el.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');
     }
 
-    // --- FIREBASE CONFIG & SETUP (Persistence Disabled for Reliability) ---
+    // --- PERFORMANCE UTILITIES (DEBOUNCE) ---
+    function debounce(func, wait) {
+        let timeout;
+        return function(...args) {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(this, args), wait);
+        };
+    }
+
+    // --- FIREBASE CONFIG & SETUP ---
     const firebaseConfig = {
         apiKey: "AIzaSyB_O5J7N3OocENr-De87sXAf5-ofpFtBLs",
         authDomain: "pos-app-37e46.firebaseapp.com",
@@ -411,7 +429,6 @@
     const firebaseApp = firebase.initializeApp(firebaseConfig);
     const database = firebaseApp.database();
     
-    // --- CONNECTION STATUS LISTENER ---
     database.ref('.info/connected').on('value', (snap) => {
         const el = document.getElementById('connDot');
         const txt = document.getElementById('connText');
@@ -431,21 +448,43 @@
 
     function writeData(path, data) { database.ref(path).set(data).catch(e=>console.error(e)); }
     
+    // --- OPTIMIZED LISTENERS (THROTTLED UI UPDATES) ---
+    let uiUpdateTimeout;
+    function scheduleUIUpdate() {
+        if(uiUpdateTimeout) return;
+        uiUpdateTimeout = requestAnimationFrame(() => {
+            updateUI();
+            uiUpdateTimeout = null;
+        });
+    }
+
     function initializeDatabaseListeners() {
         database.ref('products').on('value', s => { 
             products = s.val() ? Object.values(s.val()) : []; 
             document.getElementById('itemCount').innerText = `(${products.length} items)`;
-            updateUI(); 
+            if(currentTab === 'products' || currentTab === 'ledger') scheduleUIUpdate();
         });
-        database.ref('distributions').limitToLast(300).on('value', s => { distributions = s.val() ? Object.values(s.val()).sort((a,b)=>new Date(a.date)-new Date(b.date)) : []; if(currentTab==='distribution'||currentTab==='ledger') updateUI(); });
-        database.ref('restocks').limitToLast(200).on('value', s => { restocks = s.val() ? Object.values(s.val()).sort((a,b)=>new Date(a.date)-new Date(b.date)) : []; if(currentTab==='restock'||currentTab==='ledger') updateUI(); });
-        database.ref('returns').limitToLast(200).on('value', s => { returns = s.val() ? Object.values(s.val()).sort((a,b)=>new Date(a.date)-new Date(b.date)) : []; if(currentTab==='returns'||currentTab==='ledger') updateUI(); });
+        database.ref('distributions').limitToLast(300).on('value', s => { 
+            distributions = s.val() ? Object.values(s.val()).sort((a,b)=>new Date(a.date)-new Date(b.date)) : []; 
+            if(currentTab==='distribution'||currentTab==='ledger') scheduleUIUpdate(); 
+        });
+        database.ref('restocks').limitToLast(200).on('value', s => { 
+            restocks = s.val() ? Object.values(s.val()).sort((a,b)=>new Date(a.date)-new Date(b.date)) : []; 
+            if(currentTab==='restock'||currentTab==='ledger') scheduleUIUpdate(); 
+        });
+        database.ref('returns').limitToLast(200).on('value', s => { 
+            returns = s.val() ? Object.values(s.val()).sort((a,b)=>new Date(a.date)-new Date(b.date)) : []; 
+            if(currentTab==='returns'||currentTab==='ledger') scheduleUIUpdate(); 
+        });
     }
     
     function showTab(tab) {
-        currentTab = tab; document.querySelectorAll('.tab-content').forEach(e=>e.classList.add('hidden')); document.querySelectorAll('.tab-btn').forEach(e=>{e.classList.remove('bg-blue-600','text-white'); e.classList.add('text-gray-600');});
-        document.getElementById(tab+'Tab').classList.remove('hidden'); document.querySelector(`[data-tab="${tab}"]`).classList.add('bg-blue-600','text-white');
-        updateUI();
+        currentTab = tab; 
+        document.querySelectorAll('.tab-content').forEach(e=>e.classList.add('hidden')); 
+        document.querySelectorAll('.tab-btn').forEach(e=>{e.classList.remove('bg-blue-600','text-white'); e.classList.add('text-gray-600');});
+        document.getElementById(tab+'Tab').classList.remove('hidden'); 
+        document.querySelector(`[data-tab="${tab}"]`).classList.add('bg-blue-600','text-white');
+        scheduleUIUpdate();
     }
 
     // --- PRODUCTS ---
@@ -506,14 +545,37 @@
         document.getElementById('distBuyPrice').value=''; document.getElementById('distSellPrice').value='';
     }
 
-    // --- RESTOCK ---
+    // --- RESTOCK (UPDATED WITH PRICE UPDATES) ---
     function addRestock() {
-        const pid = parseInt(document.getElementById('restockProduct').value); const qty = parseFloat(document.getElementById('restockQty').value)||0;
+        const pid = parseInt(document.getElementById('restockProduct').value); 
+        const qty = parseFloat(document.getElementById('restockQty').value)||0;
+        const cost = parseFloat(document.getElementById('restockCost').value)||0;
+        const sell = parseFloat(document.getElementById('restockSellPrice').value)||0;
+
         if(!pid || qty<=0) return alert("Invalid");
         const p = products.find(x=>x.id===pid);
-        writeData(`products/${p.id}`, {...p, stock: p.stock+qty});
-        writeData(`restocks/${Date.now()}`, { id: Date.now(), date: new Date().toISOString(), productName: p.name, qty, cost: p.buyPrice*qty });
-        document.getElementById('restockQty').value=''; document.getElementById('restockProduct').value=''; document.getElementById('restockProductSearch').value='';
+        
+        // Use new values if provided, else keep old
+        const finalCost = cost > 0 ? cost : p.buyPrice;
+        const finalSell = sell > 0 ? sell : p.sellPrice;
+
+        // Update Product Master Data
+        writeData(`products/${p.id}`, {
+            ...p, 
+            stock: p.stock+qty,
+            buyPrice: finalCost,
+            sellPrice: finalSell
+        });
+        
+        // Log the restock
+        writeData(`restocks/${Date.now()}`, { id: Date.now(), date: new Date().toISOString(), productName: p.name, qty, cost: finalCost*qty });
+        
+        // Reset Inputs
+        document.getElementById('restockQty').value=''; 
+        document.getElementById('restockCost').value=''; 
+        document.getElementById('restockSellPrice').value=''; 
+        document.getElementById('restockProduct').value=''; 
+        document.getElementById('restockProductSearch').value='';
     }
 
     // --- RETURNS ---
@@ -565,9 +627,14 @@
         returnCart = []; renderReturnCart(); alert("Done!");
     }
 
-    // --- HELPER UI ---
+    // --- HELPER UI & DEBOUNCED SEARCH ---
     function showDropdown(t) { document.getElementById(t+'ProductDropdown').classList.remove('hidden'); filterProducts(t); }
     function hideDropdown(t, e) { setTimeout(()=>{ if(!e.relatedTarget?.closest('#'+t+'ProductDropdown')) document.getElementById(t+'ProductDropdown').classList.add('hidden'); }, 200); }
+    
+    // DEBOUNCED VERSIONS
+    const debouncedFilter = debounce((t) => filterProducts(t), 300);
+    const debouncedUpdateUI = debounce(() => updateUI(), 300);
+
     function filterProducts(t) {
         const val = document.getElementById(t+'ProductSearch').value.toLowerCase();
         const list = products.filter(p=>p.name.toLowerCase().includes(val)).slice(0, 50);
@@ -578,17 +645,25 @@
         document.getElementById(t+'Product').value = id;
         document.getElementById(t+'ProductSearch').value = name;
         document.getElementById(t+'ProductDropdown').classList.add('hidden');
+        
+        const p = products.find(x=>x.id===id);
+        
         if(t === 'dist') {
-            const p = products.find(x=>x.id===id);
             document.getElementById('distBuyPrice').value = p.buyPrice;
             document.getElementById('distSellPrice').value = p.sellPrice;
+        }
+        // UPDATED FOR RESTOCK (Fill Both Prices)
+        if(t === 'restock') {
+            document.getElementById('restockCost').value = p.buyPrice;
+            document.getElementById('restockSellPrice').value = p.sellPrice;
         }
     }
 
     function updateUI() {
         if(currentTab==='products') {
             const search = document.getElementById('productListSearch').value.toLowerCase();
-            document.getElementById('productsTableBody').innerHTML = products.filter(p=>p.name.toLowerCase().includes(search)).slice(0, 50).map(p=>`<tr class="hover:bg-gray-50 border-b"><td class="p-3 font-medium">${p.name}</td><td class="p-3 text-right">${p.buyPrice}</td><td class="p-3 text-right">${p.sellPrice}</td><td class="p-3 text-right font-bold">${p.stock}</td><td class="p-3 text-right">${(p.buyPrice*p.stock).toFixed(2)}</td><td class="p-3 text-center"><button onclick="editProduct(${p.id})" class="text-blue-600 mr-2">Edit</button><button onclick="deleteProduct(${p.id})" class="text-red-500">Del</button></td></tr>`).join('');
+            const filtered = products.filter(p=>p.name.toLowerCase().includes(search)).slice(0, 50);
+            document.getElementById('productsTableBody').innerHTML = filtered.map(p=>`<tr class="hover:bg-gray-50 border-b"><td class="p-3 font-medium">${p.name}</td><td class="p-3 text-right">${p.buyPrice}</td><td class="p-3 text-right">${p.sellPrice}</td><td class="p-3 text-right font-bold">${p.stock}</td><td class="p-3 text-center"><button onclick="editProduct(${p.id})" class="text-blue-600 mr-2">Edit</button><button onclick="deleteProduct(${p.id})" class="text-red-500">Del</button></td></tr>`).join('');
         }
         if(currentTab==='distribution') {
             document.getElementById('distributionTableBody').innerHTML = distributions.slice().reverse().map(d=> {
@@ -608,22 +683,15 @@
             const fr = restocks.filter(r=>new Date(r.date)>=s && new Date(r.date)<=e);
             const fre = returns.filter(r=>new Date(r.date)>=s && new Date(r.date)<=e);
             
-            // --- UPDATED INCOME CALCULATION ---
             const inc = fd.reduce((a,b)=> {
                 let price = b.buyPrice;
-                if(!price) {
-                    const p = products.find(x => x.name === b.productName);
-                    if(p) price = p.buyPrice;
-                }
+                if(!price) { const p = products.find(x => x.name === b.productName); if(p) price = p.buyPrice; }
                 return a + ((price || 0) * b.qty);
             }, 0);
             
             const freeC = fd.reduce((a,b)=> {
                  let price = b.buyPrice;
-                 if(!price) {
-                     const p = products.find(x => x.name === b.productName);
-                     if(p) price = p.buyPrice;
-                 }
+                 if(!price) { const p = products.find(x => x.name === b.productName); if(p) price = p.buyPrice; }
                  return a + ((price || 0) * (b.freeQty || 0));
             }, 0);
 
@@ -640,7 +708,7 @@
         }
     }
 
-    // --- REPORTS ---
+    // --- REPORTS (Kept same) ---
     function generateFinancialReport(mode='download') {
         const s = document.getElementById('reportStartDate').value, e = document.getElementById('reportEndDate').value;
         if(!s||!e) return alert("Select Dates");
@@ -798,7 +866,7 @@
         }
     }
 
-    // --- LEDGER DATE FUNCTIONS (Correctly Placed) ---
+    // --- LEDGER DATE FUNCTIONS ---
     function initLedgerDates() { 
         const d = new Date(); 
         const f = new Date(d.getFullYear(), d.getMonth(), 1); 
@@ -806,8 +874,8 @@
         document.getElementById('ledgerStart').value = f.toISOString().split('T')[0]; 
         document.getElementById('ledgerEnd').value = l.toISOString().split('T')[0]; 
     }
-    function filterLedger() { updateUI(); }
-    function resetLedgerDates() { initLedgerDates(); updateUI(); }
+    function filterLedger() { scheduleUIUpdate(); }
+    function resetLedgerDates() { initLedgerDates(); scheduleUIUpdate(); }
 
     // Init Logic
     const d = new Date(); document.getElementById('reportEndDate').valueAsDate = d; d.setDate(d.getDate()-30); document.getElementById('reportStartDate').valueAsDate = d;
