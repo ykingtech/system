@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <title>CNV Distribution System (Stable v2.2)</title>
+    <title>CNV Distribution System (Stable v2.4)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
@@ -92,7 +92,7 @@
             <div class="flex items-center space-x-3">
                 <div class="bg-blue-600 w-10 h-10 rounded-lg flex items-center justify-center text-white font-bold text-xl">C</div>
                 <div>
-                    <h1 class="text-xl font-bold text-gray-800">Distribution System v2.2</h1>
+                    <h1 class="text-xl font-bold text-gray-800">Distribution System v2.4</h1>
                     <div class="flex items-center gap-2 mt-1">
                         <div id="connDot" class="status-dot status-offline"></div>
                         <span id="connText" class="text-xs text-gray-500 font-medium">Initializing...</span>
@@ -193,7 +193,7 @@
         <div id="returnsTab" class="container mx-auto px-4 pb-8 tab-content hidden">
             <div class="glass rounded-xl shadow-custom p-6 mb-6">
                 <h2 class="text-2xl font-bold text-gray-800 mb-6">Return Items (Cart Mode)</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     <div class="relative lg:col-span-2">
                         <select id="retProduct" class="hidden"><option value="">Select</option></select>
                         <input type="text" id="retProductSearch" placeholder="Search Product..." class="w-full px-4 py-2 border rounded-lg focus:border-blue-500" onfocus="showDropdown('ret')" onblur="hideDropdown('ret', event)" onkeyup="debouncedFilter('ret')" autocomplete="off">
@@ -204,16 +204,27 @@
                     <input type="text" inputmode="decimal" id="retQty" placeholder="Sold Return Qty" class="px-4 py-2 border rounded-lg focus:border-blue-500" oninput="validateNum(this)">
                     <input type="text" inputmode="decimal" id="retFreeQty" placeholder="Free Return Qty" class="px-4 py-2 border rounded-lg bg-yellow-50 focus:border-yellow-500" oninput="validateNum(this)">
                     
+                    <div class="relative">
+                        <label class="text-xs text-gray-500 block mb-1 font-bold">Buy Price (Return)</label>
+                        <input type="text" inputmode="decimal" id="retBuyPrice" placeholder="Auto" class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-700" oninput="validateNum(this)">
+                    </div>
+                    <div class="relative">
+                        <label class="text-xs text-gray-500 block mb-1 font-bold">Sell Price (Return)</label>
+                        <input type="text" inputmode="decimal" id="retSellPrice" placeholder="Auto" class="w-full px-4 py-2 border border-blue-300 rounded-lg bg-white font-bold text-blue-800" oninput="validateNum(this)">
+                    </div>
+
                     <select id="retReason" class="px-4 py-2 border rounded-lg focus:border-blue-500">
                         <option value="Unsold">Unsold</option>
                         <option value="Expired">Expired</option>
                         <option value="Damaged">Damaged</option>
                     </select>
-                    <div class="flex items-center gap-2 lg:col-span-6 bg-orange-50 p-2 rounded border border-orange-200">
+                    
+                    <div class="flex items-center gap-2 lg:col-span-3 bg-orange-50 p-2 rounded border border-orange-200">
                         <input type="checkbox" id="retAddToStock" class="w-5 h-5 text-orange-600 rounded focus:ring-orange-500" checked>
                         <label for="retAddToStock" class="text-sm font-bold text-orange-800 cursor-pointer">Add back to Stock?</label>
                     </div>
-                    <button onclick="addToReturnCart()" class="bg-orange-500 text-white py-2 rounded-lg font-bold lg:col-span-6 hover:bg-orange-600 transition">Add to Return List</button>
+                    
+                    <button onclick="addToReturnCart()" class="bg-orange-500 text-white py-2 rounded-lg font-bold lg:col-span-4 hover:bg-orange-600 transition mt-2">Add to Return List</button>
                 </div>
             </div>
 
@@ -569,9 +580,18 @@
         document.getElementById('distBuyPrice').value=''; document.getElementById('distSellPrice').value='';
     }
 
-    // --- RESTOCK (UPDATED WITH PRICE UPDATES) ---
+    // --- RESTOCK (FIXED FALLBACK LOGIC) ---
     function addRestock() {
-        const pid = parseInt(document.getElementById('restockProduct').value); 
+        let pid = parseInt(document.getElementById('restockProduct').value); 
+        
+        // **NEW FIX: Fallback to find product by name if ID is missing**
+        if(!pid) {
+            const searchText = document.getElementById('restockProductSearch').value.toLowerCase();
+            const pFound = products.find(p => p.name.toLowerCase() === searchText);
+            if(pFound) pid = pFound.id;
+        }
+        // -------------------------------------------------------------
+
         const qty = parseFloat(document.getElementById('restockQty').value)||0;
         const cost = parseFloat(document.getElementById('restockCost').value)||0;
         const sell = parseFloat(document.getElementById('restockSellPrice').value)||0;
@@ -602,7 +622,7 @@
         document.getElementById('restockProductSearch').value='';
     }
 
-    // --- RETURNS ---
+    // --- RETURNS (UPDATED WITH PRICE FIELDS) ---
     let returnCart = [];
     function addToReturnCart() {
         let pid = parseInt(document.getElementById('retProduct').value);
@@ -616,14 +636,28 @@
         const free = parseFloat(document.getElementById('retFreeQty').value)||0;
         const reason = document.getElementById('retReason').value;
         const addStock = document.getElementById('retAddToStock').checked;
+        
+        const cBuy = parseFloat(document.getElementById('retBuyPrice').value)||0;
+        // cSell is not used for calculation but can be read if needed: parseFloat(document.getElementById('retSellPrice').value)||0;
+
         if(!pid || !shop) return alert("Error");
 
         const p = products.find(x=>x.id===pid);
-        const val = p.buyPrice * qty; 
+        
+        // Use custom buy price if entered, else use product master price
+        const finalBuy = cBuy > 0 ? cBuy : p.buyPrice;
+        const val = finalBuy * qty; 
         
         returnCart.push({ pid, name: p.name, shop, qty, free, reason, addStock, value: val });
         renderReturnCart();
-        document.getElementById('retQty').value=''; document.getElementById('retFreeQty').value=''; document.getElementById('retProduct').value=''; document.getElementById('retProductSearch').value='';
+        
+        // Clear inputs
+        document.getElementById('retQty').value=''; 
+        document.getElementById('retFreeQty').value=''; 
+        document.getElementById('retProduct').value=''; 
+        document.getElementById('retProductSearch').value='';
+        document.getElementById('retBuyPrice').value='';
+        document.getElementById('retSellPrice').value='';
     }
 
     function renderReturnCart() {
@@ -678,10 +712,15 @@
             document.getElementById('distBuyPrice').value = p.buyPrice;
             document.getElementById('distSellPrice').value = p.sellPrice;
         }
-        // UPDATED FOR RESTOCK (Fill Both Prices)
+        // FOR RESTOCK (Fill Both Prices)
         if(t === 'restock') {
             document.getElementById('restockCost').value = p.buyPrice;
             document.getElementById('restockSellPrice').value = p.sellPrice;
+        }
+        // FOR RETURNS (Fill Both Prices)
+        if(t === 'ret') {
+            document.getElementById('retBuyPrice').value = p.buyPrice;
+            document.getElementById('retSellPrice').value = p.sellPrice;
         }
     }
 
@@ -956,4 +995,4 @@
     initLedgerDates(); updateDots(); initializeDatabaseListeners();
 </script>
 </body>
-</html>
+    </html>
