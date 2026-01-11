@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <title>CNV Distribution System (Stable v2.4)</title>
+    <title>CNV Distribution System (Stable v2.5 - ID Tracked)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
@@ -92,7 +92,7 @@
             <div class="flex items-center space-x-3">
                 <div class="bg-blue-600 w-10 h-10 rounded-lg flex items-center justify-center text-white font-bold text-xl">C</div>
                 <div>
-                    <h1 class="text-xl font-bold text-gray-800">Distribution System v2.4</h1>
+                    <h1 class="text-xl font-bold text-gray-800">Distribution System v2.5</h1>
                     <div class="flex items-center gap-2 mt-1">
                         <div id="connDot" class="status-dot status-offline"></div>
                         <span id="connText" class="text-xs text-gray-500 font-medium">Initializing...</span>
@@ -122,7 +122,6 @@
                 <input type="hidden" id="editingProductId">
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                     <input type="text" id="prodName" placeholder="Product Name" class="px-4 py-2 border border-gray-300 rounded-lg focus:border-blue-500" autocomplete="off">
-                    
                     <input type="text" inputmode="decimal" id="prodBuyPrice" placeholder="Buy Price" class="px-4 py-2 border border-gray-300 rounded-lg focus:border-blue-500" oninput="validateNum(this)">
                     <input type="text" inputmode="decimal" id="prodSellPrice" placeholder="Sell Price" class="px-4 py-2 border border-gray-300 rounded-lg focus:border-blue-500" oninput="validateNum(this)">
                     <input type="text" inputmode="decimal" id="prodStock" placeholder="Stock" class="px-4 py-2 border border-gray-300 rounded-lg focus:border-blue-500" oninput="validateNum(this)">
@@ -539,7 +538,7 @@
     function deleteProduct(id) { openAdminModal('delete', id); }
     function deleteProductReal(id) { if(confirm("Delete?")) writeData(`products/${id}`, null); }
 
-    // --- SALES / DISTRIBUTION ---
+    // --- SALES / DISTRIBUTION (UPDATED TO SAVE ID) ---
     function addDistribution() {
         let pid = parseInt(document.getElementById('distProduct').value);
         if(!pid) {
@@ -564,6 +563,7 @@
         writeData(`products/${p.id}`, {...p, stock: p.stock-(qty+free)});
         const dist = { 
             id: Date.now(), 
+            productId: p.id, // SAVING ID HERE
             date: new Date().toISOString(), 
             productName: p.name, 
             shop, 
@@ -580,17 +580,14 @@
         document.getElementById('distBuyPrice').value=''; document.getElementById('distSellPrice').value='';
     }
 
-    // --- RESTOCK (FIXED FALLBACK LOGIC) ---
+    // --- RESTOCK (UPDATED TO SAVE ID) ---
     function addRestock() {
         let pid = parseInt(document.getElementById('restockProduct').value); 
-        
-        // **NEW FIX: Fallback to find product by name if ID is missing**
         if(!pid) {
             const searchText = document.getElementById('restockProductSearch').value.toLowerCase();
             const pFound = products.find(p => p.name.toLowerCase() === searchText);
             if(pFound) pid = pFound.id;
         }
-        // -------------------------------------------------------------
 
         const qty = parseFloat(document.getElementById('restockQty').value)||0;
         const cost = parseFloat(document.getElementById('restockCost').value)||0;
@@ -599,11 +596,9 @@
         if(!pid || qty<=0) return alert("Invalid");
         const p = products.find(x=>x.id===pid);
         
-        // Use new values if provided, else keep old
         const finalCost = cost > 0 ? cost : p.buyPrice;
         const finalSell = sell > 0 ? sell : p.sellPrice;
 
-        // Update Product Master Data
         writeData(`products/${p.id}`, {
             ...p, 
             stock: p.stock+qty,
@@ -611,10 +606,9 @@
             sellPrice: finalSell
         });
         
-        // Log the restock
-        writeData(`restocks/${Date.now()}`, { id: Date.now(), date: new Date().toISOString(), productName: p.name, qty, cost: finalCost*qty });
+        // SAVING ID HERE
+        writeData(`restocks/${Date.now()}`, { id: Date.now(), productId: p.id, date: new Date().toISOString(), productName: p.name, qty, cost: finalCost*qty });
         
-        // Reset Inputs
         document.getElementById('restockQty').value=''; 
         document.getElementById('restockCost').value=''; 
         document.getElementById('restockSellPrice').value=''; 
@@ -622,7 +616,7 @@
         document.getElementById('restockProductSearch').value='';
     }
 
-    // --- RETURNS (UPDATED WITH PRICE FIELDS) ---
+    // --- RETURNS (UPDATED TO SAVE ID) ---
     let returnCart = [];
     function addToReturnCart() {
         let pid = parseInt(document.getElementById('retProduct').value);
@@ -636,22 +630,17 @@
         const free = parseFloat(document.getElementById('retFreeQty').value)||0;
         const reason = document.getElementById('retReason').value;
         const addStock = document.getElementById('retAddToStock').checked;
-        
         const cBuy = parseFloat(document.getElementById('retBuyPrice').value)||0;
-        // cSell is not used for calculation but can be read if needed: parseFloat(document.getElementById('retSellPrice').value)||0;
 
         if(!pid || !shop) return alert("Error");
 
         const p = products.find(x=>x.id===pid);
-        
-        // Use custom buy price if entered, else use product master price
         const finalBuy = cBuy > 0 ? cBuy : p.buyPrice;
         const val = finalBuy * qty; 
         
         returnCart.push({ pid, name: p.name, shop, qty, free, reason, addStock, value: val });
         renderReturnCart();
         
-        // Clear inputs
         document.getElementById('retQty').value=''; 
         document.getElementById('retFreeQty').value=''; 
         document.getElementById('retProduct').value=''; 
@@ -675,12 +664,14 @@
         }
     }
     function removeFromCart(index) { returnCart.splice(index, 1); renderReturnCart(); }
+    
     function submitAllReturns() {
         if(!confirm("Submit?")) return;
         returnCart.forEach(item => {
             const p = products.find(x=>x.id === item.pid);
             if(item.addStock) writeData(`products/${p.id}`, {...p, stock: p.stock + item.qty + item.free});
-            writeData(`returns/${Date.now()+Math.random()}`, { id: Date.now(), date: new Date().toISOString(), productName: item.name, shop: item.shop, qty: item.qty, freeQty: item.free, reason: item.reason, value: item.value });
+            // SAVING ID HERE
+            writeData(`returns/${Date.now()+Math.random()}`, { id: Date.now(), productId: item.pid, date: new Date().toISOString(), productName: item.name, shop: item.shop, qty: item.qty, freeQty: item.free, reason: item.reason, value: item.value });
         });
         returnCart = []; renderReturnCart(); alert("Done!");
     }
@@ -689,22 +680,36 @@
     function showDropdown(t) { document.getElementById(t+'ProductDropdown').classList.remove('hidden'); filterProducts(t); }
     function hideDropdown(t, e) { setTimeout(()=>{ if(!e.relatedTarget?.closest('#'+t+'ProductDropdown')) document.getElementById(t+'ProductDropdown').classList.add('hidden'); }, 200); }
     
-    // DEBOUNCED VERSIONS
     const debouncedFilter = debounce((t) => filterProducts(t), 300);
     const debouncedUpdateUI = debounce(() => updateUI(), 300);
 
+    // --- UPDATED FILTER PRODUCTS FUNCTION TO SHOW PRICE ---
     function filterProducts(t) {
         const val = document.getElementById(t+'ProductSearch').value.toLowerCase();
         const list = products.filter(p=>p.name.toLowerCase().includes(val)).slice(0, 50);
         const div = document.getElementById(t+'ProductDropdown');
-        div.innerHTML = list.length ? list.map(p=>`<div class="p-2 hover:bg-blue-50 cursor-pointer border-b" onclick="selectProduct('${t}',${p.id},'${p.name.replace(/'/g,"\\'")}')">${p.name} (${p.stock})</div>`).join('') : '<div class="p-2">No items</div>';
+        
+        // Shows Price and Stock to distinguish duplicate names
+        div.innerHTML = list.length ? list.map(p=>`
+            <div class="p-2 hover:bg-blue-50 cursor-pointer border-b flex justify-between items-center" 
+                 onclick="selectProduct('${t}',${p.id},'${p.name.replace(/'/g,"\\'")}')">
+                <div>
+                    <span class="font-bold text-gray-800">${p.name}</span>
+                    <span class="text-xs text-gray-500 block">(Stock: ${p.stock})</span>
+                </div>
+                <div class="text-sm font-bold text-blue-600">
+                    Rs. ${p.sellPrice}
+                </div>
+            </div>
+        `).join('') : '<div class="p-2 text-gray-500 italic">No items found</div>';
     }
+
     function selectProduct(t, id, name) {
         document.getElementById(t+'Product').value = id;
         document.getElementById(t+'ProductSearch').value = name;
         document.getElementById(t+'ProductDropdown').classList.add('hidden');
         
-        if(t === 'reportProd') return; // Just select, no extra autofill
+        if(t === 'reportProd') return; 
 
         const p = products.find(x=>x.id===id);
         
@@ -712,12 +717,10 @@
             document.getElementById('distBuyPrice').value = p.buyPrice;
             document.getElementById('distSellPrice').value = p.sellPrice;
         }
-        // FOR RESTOCK (Fill Both Prices)
         if(t === 'restock') {
             document.getElementById('restockCost').value = p.buyPrice;
             document.getElementById('restockSellPrice').value = p.sellPrice;
         }
-        // FOR RETURNS (Fill Both Prices)
         if(t === 'ret') {
             document.getElementById('retBuyPrice').value = p.buyPrice;
             document.getElementById('retSellPrice').value = p.sellPrice;
@@ -931,9 +934,11 @@
         }
     }
 
-    // --- NEW FUNCTION: PRODUCT HISTORY REPORT ---
+    // --- UPDATED PRODUCT HISTORY REPORT (USES ID) ---
     function generateProductHistory() {
         const name = document.getElementById('reportProdProductSearch').value;
+        // GET SELECTED ID
+        const selectedId = parseInt(document.getElementById('reportProdProduct').value);
         const s = document.getElementById('reportStartDate').value;
         const e = document.getElementById('reportEndDate').value;
         
@@ -942,17 +947,23 @@
         const sd = new Date(s);
         const ed = new Date(e); ed.setHours(23,59,59);
         
-        // Filter arrays for this product name within dates
-        const sales = distributions.filter(d => d.productName === name && new Date(d.date) >= sd && new Date(d.date) <= ed)
+        // Helper to check match: Try ID first, then Name (for old data fallback)
+        const isMatch = (item) => {
+            if (item.productId && selectedId) {
+                return item.productId === selectedId;
+            }
+            return item.productName === name;
+        };
+
+        const sales = distributions.filter(d => isMatch(d) && new Date(d.date) >= sd && new Date(d.date) <= ed)
             .map(d => ({ date: d.date, type: 'SALE', desc: d.shop, qty: d.qty, free: d.freeQty, val: (d.value || 0) }));
             
-        const rest = restocks.filter(r => r.productName === name && new Date(r.date) >= sd && new Date(r.date) <= ed)
+        const rest = restocks.filter(r => isMatch(r) && new Date(r.date) >= sd && new Date(r.date) <= ed)
             .map(r => ({ date: r.date, type: 'RESTOCK', desc: 'Restock Entry', qty: r.qty, free: 0, val: -(r.cost || 0) })); 
             
-        const rets = returns.filter(r => r.productName === name && new Date(r.date) >= sd && new Date(r.date) <= ed)
+        const rets = returns.filter(r => isMatch(r) && new Date(r.date) >= sd && new Date(r.date) <= ed)
             .map(r => ({ date: r.date, type: 'RETURN', desc: r.shop + ' (' + r.reason + ')', qty: r.qty, free: r.freeQty, val: -(r.value || 0) }));
             
-        // Combine all events and Sort by date
         const all = [...sales, ...rest, ...rets].sort((a,b) => new Date(a.date) - new Date(b.date));
         
         const tbody = document.getElementById('productHistoryBody');
@@ -995,4 +1006,4 @@
     initLedgerDates(); updateDots(); initializeDatabaseListeners();
 </script>
 </body>
-    </html>
+</html>
