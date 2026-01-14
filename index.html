@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <title>CNV Distribution System (Stable v2.5 - ID Tracked)</title>
+    <title>CNV Distribution System (Stable v2.6 - ID & Keys)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
@@ -92,7 +92,7 @@
             <div class="flex items-center space-x-3">
                 <div class="bg-blue-600 w-10 h-10 rounded-lg flex items-center justify-center text-white font-bold text-xl">C</div>
                 <div>
-                    <h1 class="text-xl font-bold text-gray-800">Distribution System v2.5</h1>
+                    <h1 class="text-xl font-bold text-gray-800">Distribution System v2.6</h1>
                     <div class="flex items-center gap-2 mt-1">
                         <div id="connDot" class="status-dot status-offline"></div>
                         <span id="connText" class="text-xs text-gray-500 font-medium">Initializing...</span>
@@ -154,10 +154,17 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     <div class="relative lg:col-span-2">
                         <select id="distProduct" class="hidden"><option value="">Select</option></select>
-                        <input type="text" id="distProductSearch" placeholder="Search Product..." class="w-full px-4 py-2 border rounded-lg focus:border-blue-500" onfocus="showDropdown('dist')" onblur="hideDropdown('dist', event)" onkeyup="debouncedFilter('dist')" autocomplete="off">
+                        
+                        <input type="text" id="distProductSearch" placeholder="Search Product..." class="w-full px-4 py-2 border rounded-lg focus:border-blue-500" 
+                               onfocus="showDropdown('dist')" 
+                               onblur="hideDropdown('dist', event)" 
+                               onkeydown="navigateDropdown(event, 'dist')" 
+                               onkeyup="triggerSearch(event, 'dist')" 
+                               autocomplete="off">
+                               
                         <div id="distProductDropdown" class="absolute z-50 w-full mt-1 bg-white border rounded-lg shadow-xl max-h-60 overflow-y-auto hidden"></div>
                     </div>
-                    <input type="text" id="distShop" placeholder="Shop Name" class="px-4 py-2 border rounded-lg focus:border-blue-500" autocomplete="off">
+                    <input type="text" id="distShop" placeholder="Shop Name (Optional)" class="px-4 py-2 border rounded-lg focus:border-blue-500" autocomplete="off">
                     
                     <input type="text" inputmode="decimal" id="distQty" placeholder="Sold Qty" class="px-4 py-2 border rounded-lg focus:border-blue-500" oninput="validateNum(this)">
                     <input type="text" inputmode="decimal" id="distFreeQty" placeholder="Free Qty" class="px-4 py-2 border rounded-lg bg-yellow-50 focus:border-yellow-500" oninput="validateNum(this)">
@@ -195,10 +202,17 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     <div class="relative lg:col-span-2">
                         <select id="retProduct" class="hidden"><option value="">Select</option></select>
-                        <input type="text" id="retProductSearch" placeholder="Search Product..." class="w-full px-4 py-2 border rounded-lg focus:border-blue-500" onfocus="showDropdown('ret')" onblur="hideDropdown('ret', event)" onkeyup="debouncedFilter('ret')" autocomplete="off">
+                        
+                        <input type="text" id="retProductSearch" placeholder="Search Product..." class="w-full px-4 py-2 border rounded-lg focus:border-blue-500" 
+                               onfocus="showDropdown('ret')" 
+                               onblur="hideDropdown('ret', event)" 
+                               onkeydown="navigateDropdown(event, 'ret')" 
+                               onkeyup="triggerSearch(event, 'ret')" 
+                               autocomplete="off">
+                               
                         <div id="retProductDropdown" class="absolute z-50 w-full mt-1 bg-white border rounded-lg shadow-xl max-h-60 overflow-y-auto hidden"></div>
                     </div>
-                    <input type="text" id="retShop" placeholder="Shop Name" class="px-4 py-2 border rounded-lg focus:border-blue-500" autocomplete="off">
+                    <input type="text" id="retShop" placeholder="Shop Name (Optional)" class="px-4 py-2 border rounded-lg focus:border-blue-500" autocomplete="off">
                     
                     <input type="text" inputmode="decimal" id="retQty" placeholder="Sold Return Qty" class="px-4 py-2 border rounded-lg focus:border-blue-500" oninput="validateNum(this)">
                     <input type="text" inputmode="decimal" id="retFreeQty" placeholder="Free Return Qty" class="px-4 py-2 border rounded-lg bg-yellow-50 focus:border-yellow-500" oninput="validateNum(this)">
@@ -261,7 +275,14 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                     <div class="relative lg:col-span-2">
                         <select id="restockProduct" class="hidden"><option value="">Select</option></select>
-                        <input type="text" id="restockProductSearch" placeholder="Search Product..." class="w-full px-4 py-2 border rounded-lg focus:border-blue-500" onfocus="showDropdown('restock')" onblur="hideDropdown('restock', event)" onkeyup="debouncedFilter('restock')" autocomplete="off">
+                        
+                        <input type="text" id="restockProductSearch" placeholder="Search Product..." class="w-full px-4 py-2 border rounded-lg focus:border-blue-500" 
+                               onfocus="showDropdown('restock')" 
+                               onblur="hideDropdown('restock', event)" 
+                               onkeydown="navigateDropdown(event, 'restock')" 
+                               onkeyup="triggerSearch(event, 'restock')" 
+                               autocomplete="off">
+                               
                         <div id="restockProductDropdown" class="absolute z-50 w-full mt-1 bg-white border rounded-lg shadow-xl max-h-60 overflow-y-auto hidden"></div>
                     </div>
                     
@@ -381,7 +402,14 @@
                 <div class="flex flex-col md:flex-row gap-4 mb-4">
                     <div class="relative flex-grow">
                         <input type="hidden" id="reportProdProduct">
-                        <input type="text" id="reportProdProductSearch" placeholder="Search Product for History..." class="w-full px-4 py-2 border rounded-lg focus:border-blue-500" onfocus="showDropdown('reportProd')" onblur="hideDropdown('reportProd', event)" onkeyup="debouncedFilter('reportProd')" autocomplete="off">
+                        
+                        <input type="text" id="reportProdProductSearch" placeholder="Search Product for History..." class="w-full px-4 py-2 border rounded-lg focus:border-blue-500" 
+                               onfocus="showDropdown('reportProd')" 
+                               onblur="hideDropdown('reportProd', event)" 
+                               onkeydown="navigateDropdown(event, 'reportProd')" 
+                               onkeyup="triggerSearch(event, 'reportProd')" 
+                               autocomplete="off">
+                               
                         <div id="reportProdProductDropdown" class="absolute z-50 w-full mt-1 bg-white border rounded-lg shadow-xl max-h-60 overflow-y-auto hidden"></div>
                     </div>
                     <button onclick="generateProductHistory()" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-blue-700 transition">View History</button>
@@ -546,13 +574,15 @@
             const pFound = products.find(p => p.name.toLowerCase() === searchText);
             if(pFound) pid = pFound.id;
         }
-        const shop = document.getElementById('distShop').value;
+        const shop = document.getElementById('distShop').value; // Shop name is now optional
         const qty = parseFloat(document.getElementById('distQty').value)||0;
         const free = parseFloat(document.getElementById('distFreeQty').value)||0;
         const cBuy = parseFloat(document.getElementById('distBuyPrice').value)||0;
         const cSell = parseFloat(document.getElementById('distSellPrice').value)||0;
 
-        if(!pid || !shop) return alert("Check Product/Shop");
+        // CHANGED: Removed !shop check to make it optional
+        if(!pid) return alert("Check Product");
+        
         const p = products.find(x=>x.id===pid);
         if(p.stock < (qty+free)) return alert("Low Stock!");
         
@@ -566,7 +596,7 @@
             productId: p.id, // SAVING ID HERE
             date: new Date().toISOString(), 
             productName: p.name, 
-            shop, 
+            shop: shop || "", // Handle empty shop name
             qty, 
             freeQty: free, 
             value: costVal,
@@ -625,20 +655,21 @@
             const pFound = products.find(p => p.name.toLowerCase() === searchText);
             if(pFound) pid = pFound.id;
         }
-        const shop = document.getElementById('retShop').value;
+        const shop = document.getElementById('retShop').value; // Shop name is now optional
         const qty = parseFloat(document.getElementById('retQty').value)||0;
         const free = parseFloat(document.getElementById('retFreeQty').value)||0;
         const reason = document.getElementById('retReason').value;
         const addStock = document.getElementById('retAddToStock').checked;
         const cBuy = parseFloat(document.getElementById('retBuyPrice').value)||0;
 
-        if(!pid || !shop) return alert("Error");
+        // CHANGED: Removed !shop check to make it optional
+        if(!pid) return alert("Select Product");
 
         const p = products.find(x=>x.id===pid);
         const finalBuy = cBuy > 0 ? cBuy : p.buyPrice;
         const val = finalBuy * qty; 
         
-        returnCart.push({ pid, name: p.name, shop, qty, free, reason, addStock, value: val });
+        returnCart.push({ pid, name: p.name, shop: shop || "", qty, free, reason, addStock, value: val });
         renderReturnCart();
         
         document.getElementById('retQty').value=''; 
@@ -670,8 +701,9 @@
         returnCart.forEach(item => {
             const p = products.find(x=>x.id === item.pid);
             if(item.addStock) writeData(`products/${p.id}`, {...p, stock: p.stock + item.qty + item.free});
-            // SAVING ID HERE
-            writeData(`returns/${Date.now()+Math.random()}`, { id: Date.now(), productId: item.pid, date: new Date().toISOString(), productName: item.name, shop: item.shop, qty: item.qty, freeQty: item.free, reason: item.reason, value: item.value });
+            // CHANGED: Fixed key generation to avoid decimals (Firebase error fix)
+            const retId = Date.now() + '_' + Math.floor(Math.random()*1000); 
+            writeData(`returns/${retId}`, { id: Date.now(), productId: item.pid, date: new Date().toISOString(), productName: item.name, shop: item.shop, qty: item.qty, freeQty: item.free, reason: item.reason, value: item.value });
         });
         returnCart = []; renderReturnCart(); alert("Done!");
     }
@@ -680,11 +712,56 @@
     function showDropdown(t) { document.getElementById(t+'ProductDropdown').classList.remove('hidden'); filterProducts(t); }
     function hideDropdown(t, e) { setTimeout(()=>{ if(!e.relatedTarget?.closest('#'+t+'ProductDropdown')) document.getElementById(t+'ProductDropdown').classList.add('hidden'); }, 200); }
     
+    // Updated: Trigger search only if not nav keys
+    function triggerSearch(e, t) {
+        if(e.key === 'ArrowDown' || e.key === 'ArrowUp' || e.key === 'Enter') return;
+        debouncedFilter(t);
+    }
+
     const debouncedFilter = debounce((t) => filterProducts(t), 300);
     const debouncedUpdateUI = debounce(() => updateUI(), 300);
 
-    // --- UPDATED FILTER PRODUCTS FUNCTION TO SHOW PRICE ---
+    // --- KEYBOARD NAVIGATION LOGIC ---
+    let focusIndex = -1;
+    function navigateDropdown(e, t) {
+        const container = document.getElementById(t+'ProductDropdown');
+        if(container.classList.contains('hidden')) return;
+        
+        const items = container.querySelectorAll('div[onclick]'); 
+        if(items.length === 0) return;
+        
+        if(e.key === 'ArrowDown') {
+            e.preventDefault();
+            focusIndex++;
+            if(focusIndex >= items.length) focusIndex = 0;
+            setActiveItem(items);
+        } else if(e.key === 'ArrowUp') {
+            e.preventDefault();
+            focusIndex--;
+            if(focusIndex < 0) focusIndex = items.length - 1;
+            setActiveItem(items);
+        } else if(e.key === 'Enter') {
+            e.preventDefault();
+            if(focusIndex > -1 && items[focusIndex]) items[focusIndex].click();
+        }
+    }
+
+    function setActiveItem(items) {
+        items.forEach(i => {
+            i.classList.remove('bg-blue-200');
+            i.classList.add('hover:bg-blue-50'); // Restore hover class
+        });
+        if(focusIndex > -1 && items[focusIndex]) {
+            const item = items[focusIndex];
+            item.classList.remove('hover:bg-blue-50'); // Remove hover conflict
+            item.classList.add('bg-blue-200'); // Active highlight
+            item.scrollIntoView({block: 'nearest'});
+        }
+    }
+
+    // --- UPDATED FILTER PRODUCTS FUNCTION ---
     function filterProducts(t) {
+        focusIndex = -1; // Reset selection on new search
         const val = document.getElementById(t+'ProductSearch').value.toLowerCase();
         const list = products.filter(p=>p.name.toLowerCase().includes(val)).slice(0, 50);
         const div = document.getElementById(t+'ProductDropdown');
